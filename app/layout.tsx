@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "toy to do list",
-  description: "to study react!!!",
+  title: "toy todo list",
+  description: "To learn react!!!",
 };
 
 export default function RootLayout({
