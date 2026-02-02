@@ -7,16 +7,25 @@ interface Todo {
 }
 
 export default function Home() {
+
   const [todos, setTodos] = useState<Todo[]>([]);
 
   return (
-    <header>
-      <h1 className="text-3xl font-bold">
-        TODO LIST
-      </h1>
-    <p className="text-sm text-gray-500">
-      할 일을 정리하고 완료해보십시다리~
-    </p>
-    </header>
+    <div className="min-h-screen flex justify-center">
+      <div className="w-full max-w-2xl px-6 py-10">
+        <header>
+        <h1 className="text-3xl font-bold">
+          TODO LIST
+        </h1>
+        <p className="text-sm text-gray-500">
+          할 일을 정리하고 완료해보십시다리~
+        </p>
+      </header>
+
+      <main>
+      </main>
+
+      </div>
+    </div>
   );
 }
