@@ -2,6 +2,7 @@
 import { useState } from "react";
 
 interface Todo {
+  id: number;
   task: string;
   isComplete: boolean;
 }
@@ -9,9 +10,9 @@ interface Todo {
 export default function Home() {
 
   const [todos, setTodos] = useState<Todo[]>([
-    { task: '아침 먹기', isComplete: false, },
-    { task: '점심 먹기', isComplete: false, },
-    { task: '저녁 먹기', isComplete: false, },
+    { id: 1, task: '아침 먹기', isComplete: false, },
+    { id: 2, task: '점심 먹기', isComplete: false, },
+    { id: 3, task: '저녁 먹기', isComplete: false, },
   ]);
 
   return (
@@ -30,9 +31,17 @@ export default function Home() {
           <div className="py-5">
             <ul className="list-none space-y-2">
               {todos.map((todo) => (
-                <li>
+                <li key={todo.id}>
                   <label className="flex items-center gap-1.5">
-                    <input type='checkbox' checked={todo.isComplete} />
+                    <input 
+                    type='checkbox' 
+                    checked={todo.isComplete} 
+                    onChange={(e) => { 
+                      setTodos(
+                        prevTodos => prevTodos.map((t) =>
+                          t.id === todo.id ? { ...t, isComplete: e.target.checked } : t)
+                      );
+                      }}/>
                     <span className="text-xl">{todo.task}</span>
                   </label>
                 </li>
