@@ -4,15 +4,15 @@ import { useState } from "react";
 interface Todo {
   id: number;
   task: string;
-  isComplete: boolean;
+  completed: boolean;
 }
 
 export default function Home() {
 
   const [todos, setTodos] = useState<Todo[]>([
-    { id: 1, task: '아침 먹기', isComplete: false, },
-    { id: 2, task: '점심 먹기', isComplete: false, },
-    { id: 3, task: '저녁 먹기', isComplete: false, },
+    { id: 1, task: '아침 먹기', completed: false, },
+    { id: 2, task: '점심 먹기', completed: false, },
+    { id: 3, task: '저녁 먹기', completed: false, },
   ]);
 
   return (
@@ -32,17 +32,25 @@ export default function Home() {
             <ul className="list-none space-y-2">
               {todos.map((todo) => (
                 <li key={todo.id}>
-                  <label className="flex items-center gap-1.5">
+                  <label className="flex items-center gap-2">
                     <input 
                     type='checkbox' 
-                    checked={todo.isComplete} 
+                    className="scale-125"
+                    checked={todo.completed} 
                     onChange={(e) => { 
                       setTodos(
-                        prevTodos => prevTodos.map((t) =>
-                          t.id === todo.id ? { ...t, isComplete: e.target.checked } : t)
+                        prevTodos => {
+                          const newTodo = prevTodos.map((t) =>
+                          t.id === todo.id ? { ...t, completed: e.target.checked } : t);
+
+                          const ing = newTodo.filter((t) => !t.completed);
+                          const completed = newTodo.filter((t) => t.completed);
+
+                          return [...ing, ...completed];
+                        }
                       );
                       }}/>
-                    <span className="text-xl">{todo.task}</span>
+                    <span className={`text-lg ${todo.completed ? 'line-through text-gray-400' : ''}`}>{todo.task}</span>
                   </label>
                 </li>
               ))}
