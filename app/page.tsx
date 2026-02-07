@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 interface Todo {
   id: number;
@@ -15,6 +15,14 @@ export default function Home() {
     { id: 3, task: '저녁 먹기', completed: false, },
   ]);
 
+  const idRef = useRef(3);
+
+  const handleAddTodoButton = () => {
+    idRef.current += 1;
+    const newTodo = {id: idRef.current, task: "", completed: false,};
+    setTodos((prevTodos) => [newTodo, ...prevTodos]);
+  };
+
   return (
     <div className="min-h-screen flex justify-center">
       <div className="w-full max-w-2xl px-6 py-10">
@@ -29,6 +37,7 @@ export default function Home() {
 
         <main>
           <div className="py-5">
+            <button className="text-lg text-gray-400" onClick={handleAddTodoButton}> + 할 일 추가...</button>
             <ul className="list-none space-y-2">
               {todos.map((todo) => (
                 <li key={todo.id}>
