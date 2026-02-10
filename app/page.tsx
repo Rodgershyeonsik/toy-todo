@@ -15,12 +15,17 @@ export default function Home() {
     { id: 3, task: '저녁 먹기', completed: false, },
   ]);
 
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingText, setEditingText] = useState<string>("");
+
   const idRef = useRef(3);
 
   const handleAddTodo = () => {
     idRef.current += 1;
     const newTodo = {id: idRef.current, task: "", completed: false,};
     setTodos((prevTodos) => [newTodo, ...prevTodos]);
+    setEditingId(newTodo.id);
+    setEditingText("");
   };
 
   const handleCheckTodo = (checked: boolean, todo: Todo) => {
@@ -36,6 +41,20 @@ export default function Home() {
               }
     );
   }
+
+  const startEdit = (todo: Todo) => {
+      setEditingId(todo.id);
+      setEditingText(todo.task);
+  };
+
+  const saveEdit = (id: number) => {
+    setTodos(prev =>
+      prev.map(t =>
+        t.id === id ? { ...t, task: editingText } : t
+      )
+    );
+    setEditingId(null);
+  };
 
   return (
     <div className="min-h-screen flex justify-center">
@@ -54,15 +73,28 @@ export default function Home() {
             <button className="text-lg text-gray-400" onClick={handleAddTodo}> + 할 일 추가...</button>
             <ul className="list-none space-y-2">
               {todos.map((todo) => (
-                <li key={todo.id}>
-                  <label className="flex items-center gap-2">
-                    <input 
-                    type='checkbox' 
-                    className="scale-125"
-                    checked={todo.completed} 
-                    onChange={(e) => handleCheckTodo(e.target.checked, todo)}/>
-                    <span className={`text-lg ${todo.completed ? 'line-through text-gray-400' : ''}`}>{todo.task}</span>
-                  </label>
+                <li key={todo.id} className="flex items-center gap-2">
+                  <input 
+                  type='checkbox' 
+                  className="scale-125"
+                  checked={todo.completed} 
+                  onChange={(e) => handleCheckTodo(e.target.checked, todo)}/>
+                  {editingId === todo.id ?  
+                    <input
+                      value={editingText}
+                      onChange={(e) => setEditingText(e.target.value)}
+                      onBlur={() => saveEdit(todo.id)}
+                      onKeyDown={(e) => e.key === 'Enter' && saveEdit(todo.id)}
+                      autoFocus
+                      className="text-lg border px-1"
+                    />
+                    : <span 
+                    className={
+                      `text-lg 
+                      ${todo.completed ? 'line-through text-gray-400' : ''} 
+                      ${!todo.task && 'text-gray-400'}`}
+                    onClick={() => startEdit(todo)}>
+                      {todo.task || '할 일을 입력하세요'}</span>}
                 </li>
               ))}
             </ul>
