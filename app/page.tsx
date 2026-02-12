@@ -62,7 +62,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex justify-center">
-      <div className="w-full max-w-2xl px-6 py-10">
+      <div className="w-full max-w-lg px-6 py-10">
         <header>
           <h1 className="text-3xl font-bold">TODO LIST</h1>
           <span className="text-sm text-gray-500">
