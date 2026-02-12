@@ -56,6 +56,10 @@ export default function Home() {
     setEditingId(null);
   };
 
+  const deleteTodo = (id: number) => {
+    setTodos((prev) => prev.filter((t) => t.id !== id));
+  };
+
   return (
     <div className="min-h-screen flex justify-center">
       <div className="w-full max-w-2xl px-6 py-10">
@@ -91,13 +95,21 @@ export default function Home() {
                       className="text-lg border px-1"
                     />
                   ) : (
-                    <span
-                      className={`text-lg 
+                    <div className="group flex justify-between w-full">
+                      <span
+                        className={`text-lg 
                       ${todo.completed ? "line-through text-gray-400" : ""}`}
-                      onClick={() => startEdit(todo)}
-                    >
-                      {todo.task}
-                    </span>
+                        onClick={() => startEdit(todo)}
+                      >
+                        {todo.task}
+                      </span>
+                      <button
+                        className="opacity-0 group-hover:opacity-80 hover:text-red-500 hover:font-bold transition"
+                        onClick={() => deleteTodo(todo.id)}
+                      >
+                        X
+                      </button>
+                    </div>
                   )}
                 </li>
               ))}
