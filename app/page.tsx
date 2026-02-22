@@ -78,7 +78,10 @@ export default function Home() {
             </button>
             <ul className="list-none space-y-2">
               {todos.map((todo) => (
-                <li key={todo.id} className="flex items-center gap-2">
+                <li key={todo.id} className="flex items-center gap-2 group">
+                  <button className="opacity-0 group-hover:opacity-80">
+                    ⠿
+                  </button>
                   <input
                     type="checkbox"
                     className="scale-125"
