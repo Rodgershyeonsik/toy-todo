@@ -1,5 +1,17 @@
 "use client";
+import {
+  closestCenter,
+  DndContext,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { useRef, useState } from "react";
+import SortableItem from "./SortableItem";
 
 interface Todo {
   id: number;
@@ -60,6 +72,18 @@ export default function Home() {
     setTodos((prev) => prev.filter((t) => t.id !== id));
   };
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 6,
+      },
+    })
+  );
+
+  const handleDragEnd = () => {
+    console.log("drag end!");
+  };
+
   return (
     <div className="min-h-screen flex justify-center">
       <div className="w-full max-w-lg px-6 py-10">
@@ -76,47 +100,64 @@ export default function Home() {
               {" "}
               + 할 일 추가...
             </button>
-            <ul className="list-none space-y-2">
-              {todos.map((todo) => (
-                <li key={todo.id} className="flex items-center gap-2 group">
-                  <button className="opacity-0 group-hover:opacity-80">
-                    ⠿
-                  </button>
-                  <input
-                    type="checkbox"
-                    className="scale-125"
-                    checked={todo.completed}
-                    onChange={(e) => handleCheckTodo(e.target.checked, todo)}
-                  />
-                  {editingId === todo.id ? (
-                    <input
-                      value={editingText}
-                      onChange={(e) => setEditingText(e.target.value)}
-                      onBlur={() => saveEdit(todo.id)}
-                      onKeyDown={(e) => e.key === "Enter" && saveEdit(todo.id)}
-                      autoFocus
-                      className="text-lg border px-1"
-                    />
-                  ) : (
-                    <div className="group flex justify-between w-full">
-                      <span
-                        className={`text-lg 
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext
+                items={todos.map((todo) => todo.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                <ul className="list-none space-y-2">
+                  {todos.map((todo) => (
+                    <SortableItem
+                      id={todo.id}
+                      className="flex items-center gap-2 group"
+                    >
+                      <>
+                        <input
+                          type="checkbox"
+                          className="scale-125"
+                          checked={todo.completed}
+                          onChange={(e) =>
+                            handleCheckTodo(e.target.checked, todo)
+                          }
+                        />
+                        {editingId === todo.id ? (
+                          <input
+                            value={editingText}
+                            onChange={(e) => setEditingText(e.target.value)}
+                            onBlur={() => saveEdit(todo.id)}
+                            onKeyDown={(e) =>
+                              e.key === "Enter" && saveEdit(todo.id)
+                            }
+                            autoFocus
+                            className="text-lg border px-1"
+                          />
+                        ) : (
+                          <div className="group flex justify-between w-full">
+                            <span
+                              className={`text-lg 
                       ${todo.completed ? "line-through text-gray-400" : ""}`}
-                        onClick={() => startEdit(todo)}
-                      >
-                        {todo.task}
-                      </span>
-                      <button
-                        className="opacity-0 group-hover:opacity-80 hover:text-red-500 hover:font-bold transition"
-                        onClick={() => deleteTodo(todo.id)}
-                      >
-                        X
-                      </button>
-                    </div>
-                  )}
-                </li>
-              ))}
-            </ul>
+                              onClick={() => startEdit(todo)}
+                            >
+                              {todo.task}
+                            </span>
+                            <button
+                              className="opacity-0 group-hover:opacity-80 hover:text-red-500 hover:font-bold transition"
+                              onClick={() => deleteTodo(todo.id)}
+                            >
+                              X
+                            </button>
+                          </div>
+                        )}
+                      </>
+                    </SortableItem>
+                  ))}
+                </ul>
+              </SortableContext>
+            </DndContext>
           </div>
         </main>
       </div>
