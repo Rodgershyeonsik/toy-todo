@@ -2,11 +2,13 @@
 import {
   closestCenter,
   DndContext,
+  DragEndEvent,
   PointerSensor,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
 import {
+  arrayMove,
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
@@ -80,8 +82,19 @@ export default function Home() {
     })
   );
 
-  const handleDragEnd = () => {
-    console.log("drag end!");
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over) return;
+
+    if (active.id != over.id) {
+      setTodos((prev) => {
+        const oldIdx = prev.findIndex((todo) => todo.id === Number(active.id));
+        const newIdx = prev.findIndex((todo) => todo.id === Number(over.id));
+
+        return arrayMove(prev, oldIdx, newIdx);
+      });
+    }
   };
 
   return (
@@ -112,6 +125,7 @@ export default function Home() {
                 <ul className="list-none space-y-2">
                   {todos.map((todo) => (
                     <SortableItem
+                      key={todo.id}
                       id={todo.id}
                       className="flex items-center gap-2 group"
                     >
