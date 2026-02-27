@@ -14,12 +14,7 @@ import {
 } from "@dnd-kit/sortable";
 import { useRef, useState } from "react";
 import SortableItem from "./SortableItem";
-
-interface Todo {
-  id: number;
-  task: string;
-  completed: boolean;
-}
+import { Todo } from "./types/todo";
 
 export default function Home() {
   const [todos, setTodos] = useState<Todo[]>([
