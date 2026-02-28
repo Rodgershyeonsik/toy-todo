@@ -15,6 +15,7 @@ import {
 import { useRef, useState } from "react";
 import SortableItem from "./SortableItem";
 import { Todo } from "./types/todo";
+import TodoItem from "./TodoItem";
 
 export default function Home() {
   const [todos, setTodos] = useState<Todo[]>([
@@ -124,44 +125,17 @@ export default function Home() {
                       id={todo.id}
                       className="flex items-center gap-2 group"
                     >
-                      <>
-                        <input
-                          type="checkbox"
-                          className="scale-125"
-                          checked={todo.completed}
-                          onChange={(e) =>
-                            handleCheckTodo(e.target.checked, todo)
-                          }
-                        />
-                        {editingId === todo.id ? (
-                          <input
-                            value={editingText}
-                            onChange={(e) => setEditingText(e.target.value)}
-                            onBlur={() => saveEdit(todo.id)}
-                            onKeyDown={(e) =>
-                              e.key === "Enter" && saveEdit(todo.id)
-                            }
-                            autoFocus
-                            className="text-lg border px-1"
-                          />
-                        ) : (
-                          <div className="group flex justify-between w-full">
-                            <span
-                              className={`text-lg 
-                      ${todo.completed ? "line-through text-gray-400" : ""}`}
-                              onClick={() => startEdit(todo)}
-                            >
-                              {todo.task}
-                            </span>
-                            <button
-                              className="opacity-0 group-hover:opacity-80 hover:text-red-500 hover:font-bold transition"
-                              onClick={() => deleteTodo(todo.id)}
-                            >
-                              X
-                            </button>
-                          </div>
-                        )}
-                      </>
+                      <TodoItem
+                        key={todo.id}
+                        todo={todo}
+                        isEditing={editingId === todo.id}
+                        editingText={editingText}
+                        onToggle={handleCheckTodo}
+                        onStartEdit={startEdit}
+                        onChangeEditingText={setEditingText}
+                        onSave={saveEdit}
+                        onDelete={deleteTodo}
+                      />
                     </SortableItem>
                   ))}
                 </ul>
