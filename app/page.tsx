@@ -29,6 +29,18 @@ export default function Home() {
 
   const idRef = useRef(3);
 
+  const [activeTimerId, setActiveTimerId] = useState<number | null>(null);
+
+  const startTimer = (id: number) => {
+    console.log("start timer", id);
+    setActiveTimerId(id);
+  };
+
+  const stopTimer = () => {
+    console.log("stop timer");
+    setActiveTimerId(null);
+  };
+
   const handleAddTodo = () => {
     idRef.current += 1;
     const newTodo = { id: idRef.current, task: "", completed: false };
@@ -135,6 +147,7 @@ export default function Home() {
                         onChangeEditingText={setEditingText}
                         onSave={saveEdit}
                         onDelete={deleteTodo}
+                        onStartTimer={startTimer}
                       />
                     </SortableItem>
                   ))}
