@@ -1,4 +1,5 @@
 import { Todo } from "./types/todo";
+import { Play, Pause } from "lucide-react";
 
 type TodoItemProps = {
   todo: Todo;
@@ -21,6 +22,7 @@ export default function TodoItem({
   onChangeEditingText,
   onSave,
   onDelete,
+  onStartTimer,
 }: TodoItemProps) {
   return (
     <>
@@ -48,6 +50,16 @@ export default function TodoItem({
           >
             {todo.task}
           </span>
+          <button
+            className="opacity-0 group-hover:opacity-100 transition"
+            onClick={() => onStartTimer(todo.id)}
+          >
+            {todo.isRunning ? (
+              <Pause className="w-5 h-5 group-hover:fill-gray-400 fill-green-500 stroke-none" />
+            ) : (
+              <Play className="w-5 h-5 group-hover:fill-gray-400 hover:fill-green-500 stroke-none" />
+            )}
+          </button>
           <button
             className="opacity-0 group-hover:opacity-80 hover:text-red-500 hover:font-bold transition"
             onClick={() => onDelete(todo.id)}
