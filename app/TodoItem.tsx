@@ -11,6 +11,7 @@ type TodoItemProps = {
   onSave: (id: number) => void;
   onDelete: (id: number) => void;
   onStartTimer: (id: number) => void;
+  onStopTimer: () => void;
 };
 
 export default function TodoItem({
@@ -23,6 +24,7 @@ export default function TodoItem({
   onSave,
   onDelete,
   onStartTimer,
+  onStopTimer,
 }: TodoItemProps) {
   return (
     <>
@@ -52,12 +54,14 @@ export default function TodoItem({
           </span>
           <button
             className="opacity-0 group-hover:opacity-100 transition"
-            onClick={() => onStartTimer(todo.id)}
+            onClick={() =>
+              todo.isRunning ? onStopTimer() : onStartTimer(todo.id)
+            }
           >
             {todo.isRunning ? (
-              <Pause className="w-5 h-5 group-hover:fill-gray-400 fill-green-500 stroke-none" />
+              <Pause className="w-5 h-5 fill-gray-400 hover:fill-green-500 stroke-none" />
             ) : (
-              <Play className="w-5 h-5 group-hover:fill-gray-400 hover:fill-green-500 stroke-none" />
+              <Play className="w-5 h-5 fill-gray-400 hover:fill-green-500 stroke-none" />
             )}
           </button>
           <button

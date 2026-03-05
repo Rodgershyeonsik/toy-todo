@@ -29,16 +29,28 @@ export default function Home() {
 
   const idRef = useRef(3);
 
-  const [activeTimerId, setActiveTimerId] = useState<number | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const startTimer = (id: number) => {
-    console.log("start timer", id);
-    setActiveTimerId(id);
+    if (timerRef.current) clearInterval(timerRef.current);
+
+    setTodos((prev) => prev.map((t) => ({ ...t, isRunning: t.id === id })));
+
+    timerRef.current = setInterval(
+      () =>
+        setTodos((prev) =>
+          prev.map((t) =>
+            t.id === id ? { ...t, elapsedTime: (t.elapsedTime ?? 0) + 1 } : t
+          )
+        ),
+      1000
+    );
   };
 
   const stopTimer = () => {
-    console.log("stop timer");
-    setActiveTimerId(null);
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = null;
+    setTodos((prev) => prev.map((t) => ({ ...t, isRunning: false })));
   };
 
   const handleAddTodo = () => {
@@ -148,6 +160,7 @@ export default function Home() {
                         onSave={saveEdit}
                         onDelete={deleteTodo}
                         onStartTimer={startTimer}
+                        onStopTimer={stopTimer}
                       />
                     </SortableItem>
                   ))}
