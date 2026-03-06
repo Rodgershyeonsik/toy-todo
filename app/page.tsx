@@ -117,6 +117,8 @@ export default function Home() {
     }
   };
 
+  const runningTodo = todos.find((todo) => todo.isRunning);
+
   return (
     <div className="min-h-screen flex justify-center">
       <div className="w-full max-w-lg px-6 py-10">
@@ -129,6 +131,10 @@ export default function Home() {
 
         <main>
           <div className="py-5">
+            <div className="flex flex-col mb-2">
+              <span>진행 중 작업 : {runningTodo?.task ?? "없음"}</span>
+              <span>진행 시간 : {runningTodo?.elapsedTime ?? "-"} sec</span>
+            </div>
             <button className="text-lg text-gray-400" onClick={handleAddTodo}>
               {" "}
               + 할 일 추가...
