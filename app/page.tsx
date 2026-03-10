@@ -119,6 +119,14 @@ export default function Home() {
 
   const runningTodo = todos.find((todo) => todo.isRunning);
 
+  const formatTime = (seconds: number) => {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+
+    return `${h}시간 ${m}분 ${s}초`;
+  };
+
   return (
     <div className="min-h-screen flex justify-center">
       <div className="w-full max-w-lg px-6 py-10">
@@ -132,8 +140,16 @@ export default function Home() {
         <main>
           <div className="py-5">
             <div className="flex flex-col mb-2">
-              <span>진행 중 작업 : {runningTodo?.task ?? "없음"}</span>
-              <span>진행 시간 : {runningTodo?.elapsedTime ?? "-"} sec</span>
+              {!runningTodo?.task ? (
+                <span>이번엔 어떤 일을 해볼까?</span>
+              ) : (
+                <>
+                  <span>지금은 {runningTodo?.task}를</span>
+                  <span>
+                    {formatTime(runningTodo?.elapsedTime ?? 0)} 동안 하고 있다!
+                  </span>
+                </>
+              )}
             </div>
             <button className="text-lg text-gray-400" onClick={handleAddTodo}>
               {" "}
