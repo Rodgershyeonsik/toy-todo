@@ -16,6 +16,7 @@ import { useRef, useState } from "react";
 import SortableItem from "./SortableItem";
 import { Todo } from "./types/todo";
 import TodoItem from "./TodoItem";
+import { Square } from "lucide-react";
 
 export default function Home() {
   const [todos, setTodos] = useState<Todo[]>([
@@ -124,7 +125,9 @@ export default function Home() {
     const m = Math.floor((seconds % 3600) / 60);
     const s = seconds % 60;
 
-    return `${h}시간 ${m}분 ${s}초`;
+    return `${h < 10 ? `0${h}` : h}:${m < 10 ? `0${m}` : m}:${
+      s < 10 ? `0${s}` : s
+    }`;
   };
 
   return (
@@ -135,22 +138,30 @@ export default function Home() {
           <span className="text-sm text-gray-500">
             할 일을 정리하고 완료해보십시다리^ㅡ^
           </span>
+          <div className="flex justify-between items-center my-2 bg-gray-700 text-white rounded-sm min-h-16 px-5 py-2 gap-5">
+            {!runningTodo?.task ? (
+              <span className="text-lg">이번엔 어떤 일을 해볼까?</span>
+            ) : (
+              <>
+                <div className="flex flex-col">
+                  <span className="text-lg font-bold">{runningTodo?.task}</span>
+                  <span className="text-2xl font-bold font-mono">
+                    {formatTime(runningTodo?.elapsedTime ?? 0)}
+                  </span>
+                </div>
+                <button
+                  className="flex items-center justify-center w-12 h-12 border-2 border-white rounded-full hover:bg-white/10 transition-colors"
+                  onClick={stopTimer}
+                >
+                  <Square className="fill-white stroke-none" />
+                </button>
+              </>
+            )}
+          </div>
         </header>
 
         <main>
-          <div className="py-5">
-            <div className="flex flex-col mb-2">
-              {!runningTodo?.task ? (
-                <span>이번엔 어떤 일을 해볼까?</span>
-              ) : (
-                <>
-                  <span>지금은 {runningTodo?.task}를</span>
-                  <span>
-                    {formatTime(runningTodo?.elapsedTime ?? 0)} 동안 하고 있다!
-                  </span>
-                </>
-              )}
-            </div>
+          <div className="py-2">
             <button className="text-lg text-gray-400" onClick={handleAddTodo}>
               {" "}
               + 할 일 추가...
