@@ -16,7 +16,7 @@ import { useRef, useState } from "react";
 import SortableItem from "./SortableItem";
 import { Todo } from "./types/todo";
 import TodoItem from "./TodoItem";
-import { Square } from "lucide-react";
+import { Pause, Play, Square } from "lucide-react";
 
 export default function Home() {
   const [todos, setTodos] = useState<Todo[]>([
@@ -27,13 +27,18 @@ export default function Home() {
 
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editingText, setEditingText] = useState<string>("");
+  const [isPaused, setIsPaused] = useState(false);
 
   const idRef = useRef(3);
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  const taskPlayerButtonStyle =
+    "flex items-center justify-center w-12 h-12 border-2 border-white rounded-full hover:bg-white/10 transition-colors";
+
   const startTimer = (id: number) => {
     if (timerRef.current) clearInterval(timerRef.current);
+    setIsPaused(false);
 
     setTodos((prev) => prev.map((t) => ({ ...t, isRunning: t.id === id })));
 
@@ -52,6 +57,12 @@ export default function Home() {
     if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = null;
     setTodos((prev) => prev.map((t) => ({ ...t, isRunning: false })));
+  };
+
+  const pauseTimer = () => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = null;
+    setIsPaused(true);
   };
 
   const handleAddTodo = () => {
@@ -139,7 +150,7 @@ export default function Home() {
             할 일을 정리하고 완료해보십시다리^ㅡ^
           </span>
           <div className="flex justify-between items-center my-2 bg-gray-700 text-white rounded-sm min-h-16 px-5 py-2 gap-5">
-            {!runningTodo?.task ? (
+            {!runningTodo ? (
               <span className="text-lg">이번엔 어떤 일을 해볼까?</span>
             ) : (
               <>
@@ -149,12 +160,24 @@ export default function Home() {
                     {formatTime(runningTodo?.elapsedTime ?? 0)}
                   </span>
                 </div>
-                <button
-                  className="flex items-center justify-center w-12 h-12 border-2 border-white rounded-full hover:bg-white/10 transition-colors"
-                  onClick={stopTimer}
-                >
-                  <Square className="fill-white stroke-none" />
-                </button>
+                <div className="flex gap-1.5">
+                  <button
+                    className={taskPlayerButtonStyle}
+                    onClick={
+                      isPaused ? () => startTimer(runningTodo.id) : pauseTimer
+                    }
+                  >
+                    {isPaused ? (
+                      <Play className="fill-white stroke-none" />
+                    ) : (
+                      <Pause className="fill-white stroke-none" />
+                    )}
+                  </button>
+
+                  <button className={taskPlayerButtonStyle} onClick={stopTimer}>
+                    <Square className="fill-white stroke-none" />
+                  </button>
+                </div>
               </>
             )}
           </div>
