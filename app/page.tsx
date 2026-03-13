@@ -25,9 +25,11 @@ export default function Home() {
     { id: 3, task: "저녁 먹기", completed: false },
   ]);
 
+  type TimerStep = "IDLE" | "RUNNING" | "PAUSED";
+
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editingText, setEditingText] = useState<string>("");
-  const [isPaused, setIsPaused] = useState(false);
+  const [timerStatus, setTimerStatus] = useState<TimerStep>("IDLE");
 
   const idRef = useRef(3);
 
@@ -38,9 +40,7 @@ export default function Home() {
 
   const startTimer = (id: number) => {
     if (timerRef.current) clearInterval(timerRef.current);
-    setIsPaused(false);
-
-    setTodos((prev) => prev.map((t) => ({ ...t, isRunning: t.id === id })));
+    setTimerStatus("RUNNING");
 
     timerRef.current = setInterval(
       () =>
@@ -57,12 +57,13 @@ export default function Home() {
     if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = null;
     setTodos((prev) => prev.map((t) => ({ ...t, isRunning: false })));
+    setTimerStatus("IDLE");
   };
 
   const pauseTimer = () => {
     if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = null;
-    setIsPaused(true);
+    setTimerStatus("PAUSED");
   };
 
   const handleAddTodo = () => {
@@ -149,9 +150,34 @@ export default function Home() {
           <span className="text-sm text-gray-500">
             할 일을 정리하고 완료해보십시다리^ㅡ^
           </span>
-          <div className="flex justify-between items-center my-2 bg-gray-700 text-white rounded-sm min-h-16 px-5 py-2 gap-5">
-            {!runningTodo ? (
-              <span className="text-lg">이번엔 어떤 일을 해볼까?</span>
+          <div className="flex justify-between items-center my-2 bg-gray-700 text-white rounded-sm min-h-20 px-5 py-2 gap-5">
+            {timerStatus === "IDLE" ? (
+              <div className="flex w-full justify-between items-center">
+                <select
+                  className="bg-gray-800 text-white text-sm rounded-md px-3 py-2 border border-gray-600 outline-none cursor-pointer transition-all"
+                  onChange={(e) => {
+                    const id = Number(e.target.value);
+                    setTodos((prev) =>
+                      prev.map((t) => ({ ...t, isRunning: t.id === id }))
+                    );
+                  }}
+                >
+                  <option value="">할 일을 선택하여 시작해보세요</option>
+                  {todos.map((todo) => (
+                    <option key={todo.id} value={todo.id}>
+                      {todo.task}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  className={taskPlayerButtonStyle}
+                  onClick={() =>
+                    runningTodo ? startTimer(runningTodo?.id) : {}
+                  }
+                >
+                  <Play className="fill-white stroke-none" />
+                </button>
+              </div>
             ) : (
               <>
                 <div className="flex flex-col">
@@ -164,10 +190,12 @@ export default function Home() {
                   <button
                     className={taskPlayerButtonStyle}
                     onClick={
-                      isPaused ? () => startTimer(runningTodo.id) : pauseTimer
+                      runningTodo && timerStatus === "PAUSED"
+                        ? () => startTimer(runningTodo.id)
+                        : pauseTimer
                     }
                   >
-                    {isPaused ? (
+                    {timerStatus === "PAUSED" ? (
                       <Play className="fill-white stroke-none" />
                     ) : (
                       <Pause className="fill-white stroke-none" />
