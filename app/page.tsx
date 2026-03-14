@@ -17,6 +17,8 @@ import SortableItem from "./SortableItem";
 import { Todo } from "./types/todo";
 import TodoItem from "./TodoItem";
 import { Pause, Play, Square } from "lucide-react";
+import { TimerStep } from "./types/timer";
+import TaskPlayer from "./TaskPlayer";
 
 export default function Home() {
   const [todos, setTodos] = useState<Todo[]>([
@@ -25,8 +27,6 @@ export default function Home() {
     { id: 3, task: "저녁 먹기", completed: false },
   ]);
 
-  type TimerStep = "IDLE" | "RUNNING" | "PAUSED";
-
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editingText, setEditingText] = useState<string>("");
   const [timerStatus, setTimerStatus] = useState<TimerStep>("IDLE");
@@ -34,9 +34,6 @@ export default function Home() {
   const idRef = useRef(3);
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  const taskPlayerButtonStyle =
-    "flex items-center justify-center w-12 h-12 border-2 border-white rounded-full hover:bg-white/10 transition-colors";
 
   const startTimer = (id: number) => {
     if (timerRef.current) clearInterval(timerRef.current);
@@ -150,7 +147,24 @@ export default function Home() {
           <span className="text-sm text-gray-500">
             할 일을 정리하고 완료해보십시다리^ㅡ^
           </span>
-          <div className="flex justify-between items-center my-2 bg-gray-700 text-white rounded-sm min-h-20 px-5 py-2 gap-5">
+          <TaskPlayer
+            timerStatus={timerStatus}
+            todos={todos}
+            onSelectTodo={(e) => {
+              const id = Number(e.target.value);
+              setTodos((prev) =>
+                prev.map((t) => ({ ...t, isRunning: t.id === id }))
+              );
+            }}
+            onPlayTimer={
+              runningTodo
+                ? () => startTimer(runningTodo.id)
+                : () => console.log("ddd")
+            }
+            onStopTimer={stopTimer}
+            onPauseTimer={pauseTimer}
+          />
+          {/* <div className="flex justify-between items-center my-2 bg-gray-700 text-white rounded-sm min-h-20 px-5 py-2 gap-5">
             {timerStatus === "IDLE" ? (
               <div className="flex w-full justify-between items-center">
                 <select
@@ -208,7 +222,7 @@ export default function Home() {
                 </div>
               </>
             )}
-          </div>
+          </div> */}
         </header>
 
         <main>
