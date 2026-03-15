@@ -65,9 +65,7 @@ export default function TaskPlayer({
           <div className="flex gap-1.5">
             <button
               className={taskPlayerButtonStyle}
-              onClick={
-                timerStatus === "PAUSED" ? () => onPlayTimer : onPauseTimer
-              }
+              onClick={timerStatus === "PAUSED" ? onPlayTimer : onPauseTimer}
             >
               {timerStatus === "PAUSED" ? (
                 <Play className="fill-white stroke-none" />

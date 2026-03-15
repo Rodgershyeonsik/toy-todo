@@ -129,16 +129,6 @@ export default function Home() {
 
   const runningTodo = todos.find((todo) => todo.isRunning);
 
-  const formatTime = (seconds: number) => {
-    const h = Math.floor(seconds / 3600);
-    const m = Math.floor((seconds % 3600) / 60);
-    const s = seconds % 60;
-
-    return `${h < 10 ? `0${h}` : h}:${m < 10 ? `0${m}` : m}:${
-      s < 10 ? `0${s}` : s
-    }`;
-  };
-
   return (
     <div className="min-h-screen flex justify-center">
       <div className="w-full max-w-lg px-6 py-10">
@@ -156,73 +146,13 @@ export default function Home() {
                 prev.map((t) => ({ ...t, isRunning: t.id === id }))
               );
             }}
-            onPlayTimer={
-              runningTodo
-                ? () => startTimer(runningTodo.id)
-                : () => console.log("ddd")
-            }
+            onPlayTimer={() => {
+              if (!runningTodo) return;
+              startTimer(runningTodo.id);
+            }}
             onStopTimer={stopTimer}
             onPauseTimer={pauseTimer}
           />
-          {/* <div className="flex justify-between items-center my-2 bg-gray-700 text-white rounded-sm min-h-20 px-5 py-2 gap-5">
-            {timerStatus === "IDLE" ? (
-              <div className="flex w-full justify-between items-center">
-                <select
-                  className="bg-gray-800 text-white text-sm rounded-md px-3 py-2 border border-gray-600 outline-none cursor-pointer transition-all"
-                  onChange={(e) => {
-                    const id = Number(e.target.value);
-                    setTodos((prev) =>
-                      prev.map((t) => ({ ...t, isRunning: t.id === id }))
-                    );
-                  }}
-                >
-                  <option value="">할 일을 선택하여 시작해보세요</option>
-                  {todos.map((todo) => (
-                    <option key={todo.id} value={todo.id}>
-                      {todo.task}
-                    </option>
-                  ))}
-                </select>
-                <button
-                  className={taskPlayerButtonStyle}
-                  onClick={() =>
-                    runningTodo ? startTimer(runningTodo?.id) : {}
-                  }
-                >
-                  <Play className="fill-white stroke-none" />
-                </button>
-              </div>
-            ) : (
-              <>
-                <div className="flex flex-col">
-                  <span className="text-lg font-bold">{runningTodo?.task}</span>
-                  <span className="text-2xl font-bold font-mono">
-                    {formatTime(runningTodo?.elapsedTime ?? 0)}
-                  </span>
-                </div>
-                <div className="flex gap-1.5">
-                  <button
-                    className={taskPlayerButtonStyle}
-                    onClick={
-                      runningTodo && timerStatus === "PAUSED"
-                        ? () => startTimer(runningTodo.id)
-                        : pauseTimer
-                    }
-                  >
-                    {timerStatus === "PAUSED" ? (
-                      <Play className="fill-white stroke-none" />
-                    ) : (
-                      <Pause className="fill-white stroke-none" />
-                    )}
-                  </button>
-
-                  <button className={taskPlayerButtonStyle} onClick={stopTimer}>
-                    <Square className="fill-white stroke-none" />
-                  </button>
-                </div>
-              </>
-            )}
-          </div> */}
         </header>
 
         <main>
