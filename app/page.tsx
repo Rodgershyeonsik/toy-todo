@@ -16,7 +16,6 @@ import { useRef, useState } from "react";
 import SortableItem from "./SortableItem";
 import { Todo } from "./types/todo";
 import TodoItem from "./TodoItem";
-import { Pause, Play, Square } from "lucide-react";
 import { TimerStep } from "./types/timer";
 import TaskPlayer from "./TaskPlayer";
 
@@ -187,8 +186,6 @@ export default function Home() {
                         onChangeEditingText={setEditingText}
                         onSave={saveEdit}
                         onDelete={deleteTodo}
-                        onStartTimer={startTimer}
-                        onStopTimer={stopTimer}
                       />
                     </SortableItem>
                   ))}
