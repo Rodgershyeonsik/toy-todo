@@ -2,6 +2,7 @@ import { ChangeEvent } from "react";
 import { TimerStep } from "./types/timer";
 import { Todo } from "./types/todo";
 import { Pause, Play, Square } from "lucide-react";
+import { formatTime } from "@/utils";
 
 type TaskPlayerProps = {
   timerStatus: TimerStep;
@@ -10,16 +11,6 @@ type TaskPlayerProps = {
   onPlayTimer: () => void;
   onStopTimer: () => void;
   onPauseTimer: () => void;
-};
-
-const formatTime = (seconds: number) => {
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  const s = seconds % 60;
-
-  return `${h < 10 ? `0${h}` : h}:${m < 10 ? `0${m}` : m}:${
-    s < 10 ? `0${s}` : s
-  }`;
 };
 
 const taskPlayerButtonStyle =
