@@ -1,6 +1,6 @@
 import { ChangeEvent } from "react";
-import { TimerStep } from "./types/timer";
-import { Todo } from "./types/todo";
+import { TimerStep } from "@/types/timer";
+import { Todo } from "@/types/todo";
 import { Pause, Play, Square } from "lucide-react";
 import { formatTime } from "@/utils";
 
