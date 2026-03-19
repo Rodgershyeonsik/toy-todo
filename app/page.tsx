@@ -14,10 +14,12 @@ import {
 } from "@dnd-kit/sortable";
 import { useRef, useState } from "react";
 import SortableItem from "./SortableItem";
-import { Todo } from "./types/todo";
+import { Todo } from "@/types/todo";
 import TodoItem from "./TodoItem";
-import { TimerStep } from "./types/timer";
+import { TimerStep } from "@/types/timer";
 import TaskPlayer from "./TaskPlayer";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import { formatTime } from "@/utils";
 
 export default function Home() {
   const [todos, setTodos] = useState<Todo[]>([
@@ -29,6 +31,7 @@ export default function Home() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editingText, setEditingText] = useState<string>("");
   const [timerStatus, setTimerStatus] = useState<TimerStep>("IDLE");
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const idRef = useRef(3);
 
@@ -127,6 +130,10 @@ export default function Home() {
   };
 
   const runningTodo = todos.find((todo) => todo.isRunning);
+  const totalElapsed = todos.reduce(
+    (acc, todo) => acc + (todo.elapsedTime ?? 0),
+    0
+  );
 
   return (
     <div className="min-h-screen flex justify-center">
@@ -152,6 +159,14 @@ export default function Home() {
             onStopTimer={stopTimer}
             onPauseTimer={pauseTimer}
           />
+          <div className="flex justify-between p-1.5 bg-gray-200 rounded-sm">
+            <span className="font-lg font-bold font-mono">{`Total Elapsed Time | ${formatTime(
+              totalElapsed
+            )}`}</span>
+            <button className="" onClick={() => setIsOpen(!isOpen)}>
+              {isOpen ? <ChevronUp /> : <ChevronDown />}
+            </button>
+          </div>
         </header>
 
         <main>
