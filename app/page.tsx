@@ -12,7 +12,7 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import SortableItem from "@/components/SortableItem";
 import { Todo } from "@/types/todo";
 import TodoItem from "@/components/TodoItem";
@@ -30,6 +30,7 @@ export default function Home() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editingText, setEditingText] = useState<string>("");
   const [timerStatus, setTimerStatus] = useState<TimerStep>("IDLE");
+  const [isMounted, setIsMounted] = useState(false);
 
   const idRef = useRef(3);
 
@@ -128,6 +129,29 @@ export default function Home() {
   };
 
   const runningTodo = todos.find((todo) => todo.isRunning);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    const savedTodos = localStorage.getItem("my-todos");
+    if (savedTodos) {
+      try {
+        setTodos(JSON.parse(savedTodos));
+      } catch (error) {
+        console.error("데이터 불러오기 실패", error);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isMounted) {
+      localStorage.setItem("my-todos", JSON.stringify(todos));
+    }
+  }, [todos, isMounted]);
+
+  if (!isMounted) return null;
 
   return (
     <div className="min-h-screen flex justify-center">
