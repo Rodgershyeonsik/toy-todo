@@ -105,6 +105,12 @@ export default function Home() {
     setTodos((prev) => prev.filter((t) => t.id !== id));
   };
 
+  const resetElapsedTime = (id: number) => {
+    setTodos((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, elapsedTime: 0 } : t))
+    );
+  };
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -176,6 +182,7 @@ export default function Home() {
             }}
             onStopTimer={stopTimer}
             onPauseTimer={pauseTimer}
+            onResetElapsedTime={resetElapsedTime}
           />
           <Dashbaord todos={todos} />
         </header>

@@ -11,6 +11,7 @@ type TaskPlayerProps = {
   onPlayTimer: () => void;
   onStopTimer: () => void;
   onPauseTimer: () => void;
+  onResetElapsedTime: (id: number) => void;
 };
 
 const taskPlayerButtonStyle =
@@ -23,6 +24,7 @@ export default function TaskPlayer({
   onPlayTimer,
   onStopTimer,
   onPauseTimer,
+  onResetElapsedTime,
 }: TaskPlayerProps) {
   const runningTodo = todos.find((todo) => todo.isRunning);
 
@@ -49,9 +51,19 @@ export default function TaskPlayer({
         <>
           <div className="flex flex-col">
             <span className="text-lg font-bold">{runningTodo?.task}</span>
-            <span className="text-2xl font-bold font-mono">
-              {formatTime(runningTodo?.elapsedTime ?? 0)}
-            </span>
+            <div className="flex gap-3 items-center">
+              <span className="text-2xl font-bold font-mono">
+                {formatTime(runningTodo?.elapsedTime ?? 0)}
+              </span>
+              <button
+                className="bg-white/10 hover:bg-white/20 rounded-sm border border-gray-500 text-gray-50 text-sm font-semibold font-mono h-6 w-14"
+                onClick={() => {
+                  if (runningTodo) onResetElapsedTime(runningTodo.id);
+                }}
+              >
+                Reset
+              </button>
+            </div>
           </div>
           <div className="flex gap-1.5">
             <button
