@@ -105,6 +105,11 @@ export default function Home() {
     setTodos((prev) => prev.filter((t) => t.id !== id));
   };
 
+  const handleSelectTodo = (value: string) => {
+    const id = Number(value);
+    setTodos((prev) => prev.map((t) => ({ ...t, isRunning: t.id === id })));
+  };
+
   const resetElapsedTime = (id: number) => {
     setTodos((prev) =>
       prev.map((t) => (t.id === id ? { ...t, elapsedTime: 0 } : t))
@@ -170,12 +175,7 @@ export default function Home() {
           <TaskPlayer
             timerStatus={timerStatus}
             todos={todos}
-            onSelectTodo={(e) => {
-              const id = Number(e.target.value);
-              setTodos((prev) =>
-                prev.map((t) => ({ ...t, isRunning: t.id === id }))
-              );
-            }}
+            onSelectTodo={handleSelectTodo}
             onPlayTimer={() => {
               if (!runningTodo) return;
               startTimer(runningTodo.id);

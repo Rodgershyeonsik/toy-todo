@@ -1,4 +1,3 @@
-import { ChangeEvent } from "react";
 import { TimerStep } from "@/types/timer";
 import { Todo } from "@/types/todo";
 import { Pause, Play, Square } from "lucide-react";
@@ -7,7 +6,7 @@ import { formatTime } from "@/utils";
 type TaskPlayerProps = {
   timerStatus: TimerStep;
   todos: Todo[];
-  onSelectTodo: (e: ChangeEvent<HTMLSelectElement>) => void;
+  onSelectTodo: (value: string) => void;
   onPlayTimer: () => void;
   onStopTimer: () => void;
   onPauseTimer: () => void;
@@ -34,7 +33,7 @@ export default function TaskPlayer({
         <div className="flex w-full justify-between items-center">
           <select
             className="bg-gray-800 text-white text-sm rounded-md px-3 py-2 border border-gray-600 outline-none cursor-pointer transition-all"
-            onChange={onSelectTodo}
+            onChange={(e) => onSelectTodo(e.target.value)}
           >
             <option value="">할 일을 선택하여 시작해보세요</option>
             {todos.map((todo) => (
