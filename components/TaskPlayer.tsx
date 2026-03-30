@@ -1,7 +1,7 @@
 import { TimerStep } from "@/types/timer";
 import { Todo } from "@/types/todo";
-import { Pause, Play, Square } from "lucide-react";
-import { formatTime } from "@/utils";
+import { ChevronDown, Pause, Play, Square } from "lucide-react";
+import { formatTime, formatTimeToEn } from "@/utils";
 
 type TaskPlayerProps = {
   timerStatus: TimerStep;
@@ -28,21 +28,31 @@ export default function TaskPlayer({
   const runningTodo = todos.find((todo) => todo.isRunning);
 
   return (
-    <div className="flex justify-between items-center my-2 bg-gray-700 text-white rounded-sm min-h-20 px-5 py-2 gap-5">
+    <div className="flex justify-between items-center my-2 bg-gray-700 text-white rounded-sm min-h-20 px-4 py-2">
       {timerStatus === "IDLE" ? (
         <div className="flex w-full justify-between items-center">
-          <select
-            className="bg-gray-800 text-white text-sm rounded-md px-3 py-2 border border-gray-600 outline-none cursor-pointer transition-all"
-            onChange={(e) => onSelectTodo(e.target.value)}
+          <div className="flex w-full relative max-w-[70%] items-center bg-gray-800 border border-gray-600 outline-none text-sm rounded-md cursor-pointer">
+            <select
+              className="w-full appearance-none px-2 py-2.5"
+              onChange={(e) => onSelectTodo(e.target.value)}
+            >
+              <option value="">할 일을 선택하여 시작해보세요</option>
+              {todos.map((todo) => (
+                <option key={todo.id} value={todo.id}>
+                  {todo.task}
+                  {`(${formatTimeToEn(todo.elapsedTime ?? 0)})`}
+                </option>
+              ))}
+            </select>
+            <ChevronDown
+              size={16}
+              className="absolute right-2 ml-1.5 pointer-events-none"
+            />
+          </div>
+          <button
+            className={`${taskPlayerButtonStyle} shrink-0 ml-1.5`}
+            onClick={onPlayTimer}
           >
-            <option value="">할 일을 선택하여 시작해보세요</option>
-            {todos.map((todo) => (
-              <option key={todo.id} value={todo.id}>
-                {todo.task}
-              </option>
-            ))}
-          </select>
-          <button className={taskPlayerButtonStyle} onClick={onPlayTimer}>
             <Play className="fill-white stroke-none" />
           </button>
         </div>
