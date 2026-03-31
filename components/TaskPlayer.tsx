@@ -75,6 +75,10 @@ export default function TaskPlayer({
             </div>
           </div>
           <div className="flex gap-1.5">
+            <button className={taskPlayerButtonStyle} onClick={onStopTimer}>
+              <Square className="fill-white stroke-none" />
+            </button>
+
             <button
               className={taskPlayerButtonStyle}
               onClick={timerStatus === "PAUSED" ? onPlayTimer : onPauseTimer}
@@ -84,10 +88,6 @@ export default function TaskPlayer({
               ) : (
                 <Pause className="fill-white stroke-none" />
               )}
-            </button>
-
-            <button className={taskPlayerButtonStyle} onClick={onStopTimer}>
-              <Square className="fill-white stroke-none" />
             </button>
           </div>
         </>
