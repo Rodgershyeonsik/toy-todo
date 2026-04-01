@@ -1,3 +1,4 @@
+import { flexBetweenCn, flexCenterCn } from "@/constants/styles";
 import { Todo } from "@/types/todo";
 import { formatTime } from "@/utils";
 import { ChevronDown, ChevronUp } from "lucide-react";
@@ -41,7 +42,7 @@ export default function Dashbaord({ todos }: DashbaordProps) {
 
   return (
     <div className="bg-gray-200 rounded-sm overflow-hidden transition-all duration-500 ease-in-out">
-      <div className="flex justify-between items-center p-3">
+      <div className={`${flexCenterCn} p-3`}>
         <span className="text-lg font-bold font-mono">
           {`Total Elapsed Time | ${formatTime(totalElapsed)}`}
         </span>
@@ -58,7 +59,9 @@ export default function Dashbaord({ todos }: DashbaordProps) {
         }`}
       >
         <div className="p-4 space-y-6">
-          <div className="w-full h-8 bg-gray-500 flex justify-center items-center overflow-hidden shadow-inner">
+          <div
+            className={`${flexCenterCn} w-full h-8 bg-gray-500 overflow-hidden shadow-inner`}
+          >
             {totalElapsed === 0 && (
               <span className="text-white text-lg font-semibold font-mono">
                 no data
@@ -93,7 +96,7 @@ export default function Dashbaord({ todos }: DashbaordProps) {
           <div className="space-y-2">
             <ul>
               {todosByTime.map((todo, idx) => (
-                <li key={todo.id} className="flex justify-between px-1">
+                <li key={todo.id} className={`${flexBetweenCn} px-1`}>
                   <span
                     className={`text-lg font-semibold ${
                       getRankColor(idx).text

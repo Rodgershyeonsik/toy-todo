@@ -2,6 +2,7 @@ import { TimerStep } from "@/types/timer";
 import { Todo } from "@/types/todo";
 import { ChevronDown, Pause, Play, Square } from "lucide-react";
 import { formatTime, formatTimeToEn } from "@/utils";
+import { flexBetweenCn, flexCenterCn } from "@/constants/styles";
 
 type TaskPlayerProps = {
   timerStatus: TimerStep;
@@ -13,8 +14,7 @@ type TaskPlayerProps = {
   onResetElapsedTime: (id: number) => void;
 };
 
-const taskPlayerButtonStyle =
-  "flex items-center justify-center w-12 h-12 border-2 border-white rounded-full hover:bg-white/10 transition-colors";
+const taskPlayerButtonStyle = `${flexCenterCn} w-12 h-12 border-2 border-white rounded-full hover:bg-white/10 transition-colors`;
 
 export default function TaskPlayer({
   timerStatus,
@@ -28,7 +28,9 @@ export default function TaskPlayer({
   const runningTodo = todos.find((todo) => todo.isRunning);
 
   return (
-    <div className="flex justify-between items-center my-2 bg-gray-700 text-white rounded-sm min-h-20 px-4 py-2">
+    <div
+      className={`${flexCenterCn} my-2 bg-gray-700 text-white rounded-sm min-h-20 px-4 py-2`}
+    >
       {timerStatus === "IDLE" ? (
         <IdlePlayer
           todos={todos}
@@ -59,7 +61,7 @@ const IdlePlayer = ({
   onPlayTimer: () => void;
 }) => {
   return (
-    <div className="flex w-full justify-between items-center">
+    <div className={`${flexBetweenCn} w-full`}>
       <div className="flex w-full relative max-w-[70%] items-center bg-gray-800 border border-gray-600 outline-none text-sm rounded-md cursor-pointer">
         <select
           className="w-full appearance-none px-2 py-2.5"
