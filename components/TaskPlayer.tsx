@@ -29,7 +29,7 @@ export default function TaskPlayer({
 
   return (
     <div
-      className={`${flexCenterCn} my-2 bg-gray-700 text-white rounded-sm min-h-20 px-4 py-2`}
+      className={`${flexBetweenCn} my-2 bg-gray-700 text-white rounded-sm min-h-20 px-4 py-2`}
     >
       {timerStatus === "IDLE" ? (
         <IdlePlayer

@@ -42,7 +42,7 @@ export default function Dashbaord({ todos }: DashbaordProps) {
 
   return (
     <div className="bg-gray-200 rounded-sm overflow-hidden transition-all duration-500 ease-in-out">
-      <div className={`${flexCenterCn} p-3`}>
+      <div className={`${flexBetweenCn} p-3`}>
         <span className="text-lg font-bold font-mono">
           {`Total Elapsed Time | ${formatTime(totalElapsed)}`}
         </span>
@@ -60,7 +60,7 @@ export default function Dashbaord({ todos }: DashbaordProps) {
       >
         <div className="p-4 space-y-6">
           <div
-            className={`${flexCenterCn} w-full h-8 bg-gray-500 overflow-hidden shadow-inner`}
+            className={`${flexBetweenCn} w-full h-8 bg-gray-500 overflow-hidden shadow-inner`}
           >
             {totalElapsed === 0 && (
               <span className="text-white text-lg font-semibold font-mono">
