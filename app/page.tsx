@@ -19,6 +19,7 @@ import TodoItem from "@/components/TodoItem";
 import { TimerStep } from "@/types/timer";
 import TaskPlayer from "@/components/TaskPlayer";
 import Dashbaord from "@/components/Dashboard";
+import { basicButtonCn, flexCenterCn } from "@/constants/styles";
 
 export default function Home() {
   const [todos, setTodos] = useState<Todo[]>([
@@ -172,6 +173,18 @@ export default function Home() {
           <span className="text-sm text-gray-500">
             할 일을 정리하고 완료해보십시다리^ㅡ^
           </span>
+          <div className="flex justify-end gap-2 mt-3">
+            <button
+              className={`${flexCenterCn} ${basicButtonCn} flex-1 border-gray-200 bg-gray-100 hover:bg-black/20`}
+            >
+              Reset All Times
+            </button>
+            <button
+              className={`${flexCenterCn} ${basicButtonCn} flex-1 text-white border-gray-700 bg-gray-800 hover:bg-black/60`}
+            >
+              Delete All Todos
+            </button>
+          </div>
           <TaskPlayer
             timerStatus={timerStatus}
             todos={todos}
