@@ -140,6 +140,24 @@ export default function Home() {
     }
   };
 
+  const handleResetAllTimes = () => {
+    const isConfirmed = window.confirm(
+      "모든 투두의 소요 시간을 초기화하시겠습니까?"
+    );
+
+    if (isConfirmed) {
+      setTodos((prev) => prev.map((t) => ({ ...t, elapsedTime: 0 })));
+    }
+  };
+
+  const handleDeleteAllTodos = () => {
+    const isConfirmed = window.confirm("모든 투두를 삭제하시겠습니까?");
+
+    if (isConfirmed) {
+      setTodos((prev) => []);
+    }
+  };
+
   const runningTodo = todos.find((todo) => todo.isRunning);
 
   useEffect(() => {
@@ -176,11 +194,13 @@ export default function Home() {
           <div className="flex justify-end gap-2 mt-3">
             <button
               className={`${flexCenterCn} ${basicButtonCn} flex-1 border-gray-200 bg-gray-100 hover:bg-black/20`}
+              onClick={handleResetAllTimes}
             >
               Reset All Times
             </button>
             <button
               className={`${flexCenterCn} ${basicButtonCn} flex-1 text-white border-gray-700 bg-gray-800 hover:bg-black/60`}
+              onClick={handleDeleteAllTodos}
             >
               Delete All Todos
             </button>
