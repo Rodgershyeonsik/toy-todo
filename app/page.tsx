@@ -20,6 +20,7 @@ import { TimerStep } from "@/types/timer";
 import TaskPlayer from "@/components/TaskPlayer";
 import Dashbaord from "@/components/Dashboard";
 import { basicButtonCn, flexCenterCn } from "@/constants/styles";
+import { SquarePlus } from "lucide-react";
 
 export default function Home() {
   const [todos, setTodos] = useState<Todo[]>([
@@ -187,10 +188,21 @@ export default function Home() {
     <div className="min-h-screen flex justify-center">
       <div className="w-full max-w-lg px-6 py-10">
         <header>
-          <h1 className="text-3xl font-bold">TODO LIST</h1>
-          <span className="text-sm text-gray-500">
-            할 일을 정리하고 완료해보십시다리^ㅡ^
-          </span>
+          <div className="flex justify-between">
+            <div>
+              <h1 className="text-3xl font-bold">TODO LIST</h1>
+              <span className="text-sm text-gray-500">
+                할 일을 정리하고 완료해보십시다리^ㅡ^
+              </span>
+            </div>
+            <button>
+              <SquarePlus
+                className="text-gray-400 hover:text-blue-400"
+                size={40}
+              />
+            </button>
+          </div>
+
           <div className="flex justify-end gap-2 mt-3">
             <button
               className={`${flexCenterCn} ${basicButtonCn} flex-1 border-gray-200 bg-gray-100 hover:bg-black/20`}
