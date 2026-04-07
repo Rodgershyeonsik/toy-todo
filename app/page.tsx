@@ -21,6 +21,7 @@ import TaskPlayer from "@/components/TaskPlayer";
 import Dashbaord from "@/components/Dashboard";
 import { basicButtonCn, flexCenterCn } from "@/constants/styles";
 import { SquarePlus } from "lucide-react";
+import Modal from "@/components/Modal";
 
 export default function Home() {
   const [todos, setTodos] = useState<Todo[]>([
@@ -33,6 +34,7 @@ export default function Home() {
   const [editingText, setEditingText] = useState<string>("");
   const [timerStatus, setTimerStatus] = useState<TimerStep>("IDLE");
   const [isMounted, setIsMounted] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const idRef = useRef(3);
 
@@ -195,7 +197,7 @@ export default function Home() {
                 할 일을 정리하고 완료해보십시다리^ㅡ^
               </span>
             </div>
-            <button>
+            <button onClick={() => setIsOpen(true)}>
               <SquarePlus
                 className="text-gray-400 hover:text-blue-400"
                 size={40}
@@ -272,6 +274,10 @@ export default function Home() {
             </DndContext>
           </div>
         </main>
+
+        <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+          <div className="bg-white">모달을 띄워봤다눈~</div>
+        </Modal>
       </div>
     </div>
   );
