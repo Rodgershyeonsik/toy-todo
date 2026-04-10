@@ -13,15 +13,16 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { useEffect, useRef, useState } from "react";
-import SortableItem from "@/components/SortableItem";
+import SortableItem from "@/components/features/SortableItem";
 import { Todo } from "@/types/todo";
-import TodoItem from "@/components/TodoItem";
+import TodoItem from "@/components/features/TodoItem";
 import { TimerStep } from "@/types/timer";
-import TaskPlayer from "@/components/TaskPlayer";
-import Dashbaord from "@/components/Dashboard";
+import TaskPlayer from "@/components/features/TaskPlayer";
+import Dashbaord from "@/components/features/Dashboard";
 import { basicButtonCn, flexCenterCn } from "@/constants/styles";
 import { SquarePlus } from "lucide-react";
-import Modal from "@/components/Modal";
+import Modal from "@/components/common/Modal";
+import TodoEditor from "@/components/features/TodoEditor";
 
 export default function Home() {
   const [todos, setTodos] = useState<Todo[]>([
@@ -161,6 +162,10 @@ export default function Home() {
     }
   };
 
+  const handleCreateTodo = (todo: Todo) => {};
+
+  const handleEditTodo = (todo: Todo) => {};
+
   const runningTodo = todos.find((todo) => todo.isRunning);
 
   useEffect(() => {
@@ -276,7 +281,11 @@ export default function Home() {
         </main>
 
         <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-          <div className="bg-white">모달을 띄워봤다눈~</div>
+          <TodoEditor
+            isEdit={true}
+            onCreate={handleCreateTodo}
+            onEdit={handleEditTodo}
+          />
         </Modal>
       </div>
     </div>
