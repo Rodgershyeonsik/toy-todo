@@ -3,7 +3,7 @@ import { ReactNode } from "react";
 import { CSS } from "@dnd-kit/utilities";
 
 type SortableItemProps = {
-  id: number;
+  id: string;
   children: ReactNode;
   className: string;
 };

@@ -7,8 +7,8 @@ type TodoItemProps = {
   onToggle: (checked: boolean, todo: Todo) => void;
   onStartEdit: (todo: Todo) => void;
   onChangeEditingText: (editingText: string) => void;
-  onSave: (id: number) => void;
-  onDelete: (id: number) => void;
+  onSave: (id: string) => void;
+  onDelete: (id: string) => void;
 };
 
 export default function TodoItem({

@@ -25,23 +25,17 @@ import Modal from "@/components/common/Modal";
 import TodoEditor from "@/components/features/TodoEditor";
 
 export default function Home() {
-  const [todos, setTodos] = useState<Todo[]>([
-    { id: 1, task: "아침 먹기", completed: false },
-    { id: 2, task: "점심 먹기", completed: false },
-    { id: 3, task: "저녁 먹기", completed: false },
-  ]);
+  const [todos, setTodos] = useState<Todo[]>([]);
 
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [editingText, setEditingText] = useState<string>("");
   const [timerStatus, setTimerStatus] = useState<TimerStep>("IDLE");
   const [isMounted, setIsMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
-  const idRef = useRef(3);
-
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const startTimer = (id: number) => {
+  const startTimer = (id: string) => {
     if (timerRef.current) clearInterval(timerRef.current);
     setTimerStatus("RUNNING");
 
@@ -70,8 +64,7 @@ export default function Home() {
   };
 
   const handleAddTodo = () => {
-    idRef.current += 1;
-    const newTodo = { id: idRef.current, task: "", completed: false };
+    const newTodo = { id: crypto.randomUUID(), task: "", completed: false };
     setTodos((prevTodos) => [newTodo, ...prevTodos]);
     setEditingId(newTodo.id);
     setEditingText("");
@@ -95,7 +88,7 @@ export default function Home() {
     setEditingText(todo.task);
   };
 
-  const saveEdit = (id: number) => {
+  const saveEdit = (id: string) => {
     setTodos((prev) => {
       if (!editingText.trim()) {
         return prev.filter((t) => t.id !== id);
@@ -106,16 +99,15 @@ export default function Home() {
     setEditingId(null);
   };
 
-  const deleteTodo = (id: number) => {
+  const deleteTodo = (id: string) => {
     setTodos((prev) => prev.filter((t) => t.id !== id));
   };
 
-  const handleSelectTodo = (value: string) => {
-    const id = Number(value);
+  const handleSelectTodo = (id: string) => {
     setTodos((prev) => prev.map((t) => ({ ...t, isRunning: t.id === id })));
   };
 
-  const resetElapsedTime = (id: number) => {
+  const resetElapsedTime = (id: string) => {
     setTodos((prev) =>
       prev.map((t) => (t.id === id ? { ...t, elapsedTime: 0 } : t))
     );
@@ -136,8 +128,8 @@ export default function Home() {
 
     if (active.id != over.id) {
       setTodos((prev) => {
-        const oldIdx = prev.findIndex((todo) => todo.id === Number(active.id));
-        const newIdx = prev.findIndex((todo) => todo.id === Number(over.id));
+        const oldIdx = prev.findIndex((todo) => todo.id === active.id);
+        const newIdx = prev.findIndex((todo) => todo.id === over.id);
 
         return arrayMove(prev, oldIdx, newIdx);
       });
@@ -281,11 +273,7 @@ export default function Home() {
         </main>
 
         <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-          <TodoEditor
-            isEdit={true}
-            onCreate={handleCreateTodo}
-            onEdit={handleEditTodo}
-          />
+          <TodoEditor onCreate={handleCreateTodo} onEdit={handleEditTodo} />
         </Modal>
       </div>
     </div>
