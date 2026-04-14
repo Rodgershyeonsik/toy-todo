@@ -14,7 +14,7 @@ import {
 } from "@dnd-kit/sortable";
 import { useEffect, useRef, useState } from "react";
 import SortableItem from "@/components/features/SortableItem";
-import { Todo } from "@/types/todo";
+import { createTodo, Todo } from "@/types/todo";
 import TodoItem from "@/components/features/TodoItem";
 import { TimerStep } from "@/types/timer";
 import TaskPlayer from "@/components/features/TaskPlayer";
@@ -64,7 +64,7 @@ export default function Home() {
   };
 
   const handleAddTodo = () => {
-    const newTodo = { id: crypto.randomUUID(), task: "", completed: false };
+    const newTodo = createTodo();
     setTodos((prevTodos) => [newTodo, ...prevTodos]);
     setEditingId(newTodo.id);
     setEditingText("");
