@@ -7,6 +7,8 @@ export interface Todo {
   isRunning: boolean;
 }
 
+export type TodoFormData = Pick<Todo, "task" | "dailyGoalTime">;
+
 export const createTodo = (task?: string, dailyGoalTime?: number): Todo => ({
   id: crypto.randomUUID(),
   task: task ?? "",

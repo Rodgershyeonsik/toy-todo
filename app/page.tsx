@@ -14,7 +14,7 @@ import {
 } from "@dnd-kit/sortable";
 import { useEffect, useRef, useState } from "react";
 import SortableItem from "@/components/features/SortableItem";
-import { createTodo, Todo } from "@/types/todo";
+import { createTodo, Todo, TodoFormData } from "@/types/todo";
 import TodoItem from "@/components/features/TodoItem";
 import { TimerStep } from "@/types/timer";
 import TaskPlayer from "@/components/features/TaskPlayer";
@@ -154,9 +154,20 @@ export default function Home() {
     }
   };
 
-  const handleCreateTodo = (todo: Todo) => {};
+  const handleCreateTodo = (data: TodoFormData) => {
+    let newTodo = createTodo(data.task, data.dailyGoalTime);
+    setTodos((prev) => [newTodo, ...prev]);
+  };
 
-  const handleEditTodo = (todo: Todo) => {};
+  const handleEditTodo = (data: TodoFormData, id: string) => {
+    setTodos((prev) =>
+      prev.map((t) =>
+        t.id === id
+          ? { ...t, task: data.task, dailyGoalTime: data.dailyGoalTime }
+          : t
+      )
+    );
+  };
 
   const runningTodo = todos.find((todo) => todo.isRunning);
 

@@ -1,22 +1,27 @@
 import { basicButtonCn, flexCenterCn } from "@/constants/styles";
-import { Todo } from "@/types/todo";
+import { Todo, TodoFormData } from "@/types/todo";
 import { cn } from "@/utils";
 import { ChangeEvent, FormEvent, useState } from "react";
 
 type TodoEditorProps = {
-  isEdit: boolean;
-  onCreate: (todo: Todo) => void;
-  onEdit: (todo: Todo) => void;
+  todo?: Todo;
+  onCreate: (data: TodoFormData) => void;
+  onEdit: (data: TodoFormData, id: string) => void;
 };
 
 const labelCn = "text-lg font-mono font-bold";
 
 export default function TodoEditor({
-  isEdit,
+  todo,
   onCreate,
   onEdit,
 }: TodoEditorProps) {
-  const [formData, setFormData] = useState({ task: "", dailyGoalTime: "" });
+  const [formData, setFormData] = useState<TodoFormData>({
+    task: todo ? todo.task : "",
+    dailyGoalTime: todo ? todo.dailyGoalTime : 0,
+  });
+
+  const isEdit = !!todo;
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -28,11 +33,15 @@ export default function TodoEditor({
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(`submit ${formData}`);
+    if (isEdit) {
+      onEdit(formData, todo.id);
+    } else {
+      onCreate(formData);
+    }
   };
 
-  const title = isEdit ? "Create Todo!" : "Edit Todo!";
-  const submit = isEdit ? "create" : "edit";
+  const title = !isEdit ? "Create Todo!" : "Edit Todo!";
+  const submit = !isEdit ? "create" : "edit";
 
   return (
     <div className={`${flexCenterCn} flex-col min-w-sm px-5 py-3`}>
@@ -46,6 +55,7 @@ export default function TodoEditor({
             value={formData.task}
             onChange={handleChange}
             placeholder="plz enter task..."
+            required
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
           />
         </div>
