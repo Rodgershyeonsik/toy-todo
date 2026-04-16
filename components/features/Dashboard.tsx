@@ -1,8 +1,9 @@
 import { flexBetweenCn, flexCenterCn } from "@/constants/styles";
 import { Todo } from "@/types/todo";
-import { formatTime } from "@/utils";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { cn, formatTime } from "@/utils";
+import { ChevronDown, ChevronUp, Info } from "lucide-react";
 import { useState } from "react";
+import Modal from "../common/Modal";
 
 type DashbaordProps = {
   todos: Todo[];
@@ -23,6 +24,7 @@ const getRankColor = (idx: number) => {
 
 export default function Dashbaord({ todos }: DashbaordProps) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isInfoModalOpen, setIsInfoModalOpen] = useState<boolean>(false);
 
   const totalElapsed = todos.reduce(
     (acc, todo) => acc + (todo.elapsedTime ?? 0),
@@ -97,13 +99,19 @@ export default function Dashbaord({ todos }: DashbaordProps) {
             <ul>
               {todosByTime.map((todo, idx) => (
                 <li key={todo.id} className={`${flexBetweenCn} px-1`}>
-                  <span
-                    className={`text-lg font-semibold ${
-                      getRankColor(idx).text
-                    }`}
-                  >
-                    {idx + 1}. {todo.task}
-                  </span>
+                  <div className={cn(flexBetweenCn, "w-full", "mr-3")}>
+                    <span
+                      className={`text-lg font-semibold ${
+                        getRankColor(idx).text
+                      }`}
+                    >
+                      {idx + 1}. {todo.task}
+                    </span>
+                    <button onClick={() => setIsInfoModalOpen(true)}>
+                      <Info className="text-gray-600 font-bold" size={17} />
+                    </button>
+                  </div>
+
                   <span className="text-lg">
                     {formatTime(todo.elapsedTime ?? 0)}
                   </span>
@@ -113,6 +121,11 @@ export default function Dashbaord({ todos }: DashbaordProps) {
           </div>
         </div>
       </div>
+      <Modal isOpen={isInfoModalOpen} onClose={() => setIsInfoModalOpen(false)}>
+        <div className={`${flexCenterCn} flex-col min-w-sm px-5 py-3`}>
+          info 어케 넣으까,,
+        </div>
+      </Modal>
     </div>
   );
 }
