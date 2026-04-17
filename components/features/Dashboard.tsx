@@ -22,9 +22,21 @@ const getRankColor = (idx: number) => {
   }
 };
 
+const getCompletionRate = (elapsedTime: number, goalTime: number) => {
+  return Math.floor((elapsedTime / (goalTime * 60)) * 100);
+};
+
+const getCompletionRateText = (todo: Todo) => {
+  if (!todo.dailyGoalTime) return "N/A";
+
+  return `${getCompletionRate(todo.elapsedTime, todo.dailyGoalTime)}%`;
+};
+const modalTextStyle = "text-xl font-mono font-bold";
+
 export default function Dashbaord({ todos }: DashbaordProps) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isInfoModalOpen, setIsInfoModalOpen] = useState<boolean>(false);
+  const [selectedTodo, setSelectedTodo] = useState<Todo | null>(null);
 
   const totalElapsed = todos.reduce(
     (acc, todo) => acc + (todo.elapsedTime ?? 0),
@@ -34,6 +46,16 @@ export default function Dashbaord({ todos }: DashbaordProps) {
   const todosByTime = [...todos].sort(
     (a, b) => (b.elapsedTime ?? 0) - (a.elapsedTime ?? 0)
   );
+
+  const handleOpenInfo = (id: string) => {
+    setSelectedTodo(todos.find((t) => t.id === id) ?? null);
+    setIsInfoModalOpen(true);
+  };
+
+  const handleCloseInfo = () => {
+    setSelectedTodo(null);
+    setIsInfoModalOpen(false);
+  };
 
   const topThree = todosByTime.slice(0, 3);
   const others = todosByTime.slice(3);
@@ -62,7 +84,7 @@ export default function Dashbaord({ todos }: DashbaordProps) {
       >
         <div className="p-4 space-y-6">
           <div
-            className={`${flexBetweenCn} w-full h-8 bg-gray-500 overflow-hidden shadow-inner`}
+            className={`${flexCenterCn} w-full h-8 bg-gray-500 overflow-hidden shadow-inner`}
           >
             {totalElapsed === 0 && (
               <span className="text-white text-lg font-semibold font-mono">
@@ -78,7 +100,7 @@ export default function Dashbaord({ todos }: DashbaordProps) {
                       getRankColor(idx).bg
                     } h-full transition-all duration-700 ease-out border-r border-white/20`}
                     style={{
-                      width: `${(todo.elapsedTime || 0 / totalElapsed) * 100}%`,
+                      width: `${(todo.elapsedTime / totalElapsed) * 100}%`,
                     }}
                   />
                 ))}
@@ -107,7 +129,7 @@ export default function Dashbaord({ todos }: DashbaordProps) {
                     >
                       {idx + 1}. {todo.task}
                     </span>
-                    <button onClick={() => setIsInfoModalOpen(true)}>
+                    <button onClick={() => handleOpenInfo(todo.id)}>
                       <Info className="text-gray-600 font-bold" size={17} />
                     </button>
                   </div>
@@ -121,9 +143,35 @@ export default function Dashbaord({ todos }: DashbaordProps) {
           </div>
         </div>
       </div>
-      <Modal isOpen={isInfoModalOpen} onClose={() => setIsInfoModalOpen(false)}>
-        <div className={`${flexCenterCn} flex-col min-w-sm px-5 py-3`}>
-          info 어케 넣으까,,
+      <Modal isOpen={isInfoModalOpen} onClose={handleCloseInfo}>
+        <div className={`${cn(flexCenterCn)} flex-col px-5 py-3 gap-2`}>
+          <span className="text-2xl font-mono font-bold">Todo Info</span>
+          <div className="flex flex-col w-full">
+            <span className={cn(modalTextStyle, "text-md font-semibold")}>
+              Task
+            </span>
+            <span className={cn(modalTextStyle)}>
+              {selectedTodo ? selectedTodo.task : "no data"}
+            </span>
+          </div>
+          <div className="flex flex-col w-full">
+            <span className={cn(modalTextStyle, "text-md font-semibold")}>
+              Daily Goal Time
+            </span>
+            <span className={cn(modalTextStyle)}>
+              {selectedTodo
+                ? selectedTodo.dailyGoalTime ?? "Not Set"
+                : "no data"}
+            </span>
+          </div>
+          <div className="flex flex-col w-full">
+            <span className={cn(modalTextStyle, "text-md font-semibold")}>
+              Completion Rate
+            </span>
+            <span className={cn(modalTextStyle)}>
+              {selectedTodo ? getCompletionRateText(selectedTodo) : "no data"}
+            </span>
+          </div>
         </div>
       </Modal>
     </div>
