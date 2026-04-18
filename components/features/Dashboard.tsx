@@ -1,6 +1,6 @@
 import { flexBetweenCn, flexCenterCn } from "@/constants/styles";
 import { Todo } from "@/types/todo";
-import { cn, formatTime } from "@/utils";
+import { cn, formatMinutesToEn, formatTime } from "@/utils";
 import { ChevronDown, ChevronUp, Info } from "lucide-react";
 import { useState } from "react";
 import Modal from "../common/Modal";
@@ -30,6 +30,12 @@ const getCompletionRateText = (todo: Todo) => {
   if (!todo.dailyGoalTime) return "N/A";
 
   return `${getCompletionRate(todo.elapsedTime, todo.dailyGoalTime)}%`;
+};
+
+const getGoalTimeText = (goalTime?: number) => {
+  if (!goalTime) return "Not Set";
+
+  return formatMinutesToEn(goalTime);
 };
 const modalTextStyle = "text-xl font-mono font-bold";
 
@@ -160,7 +166,7 @@ export default function Dashbaord({ todos }: DashbaordProps) {
             </span>
             <span className={cn(modalTextStyle)}>
               {selectedTodo
-                ? selectedTodo.dailyGoalTime ?? "Not Set"
+                ? getGoalTimeText(selectedTodo.dailyGoalTime)
                 : "no data"}
             </span>
           </div>
