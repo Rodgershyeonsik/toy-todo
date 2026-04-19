@@ -1,7 +1,7 @@
 import { flexBetweenCn, flexCenterCn } from "@/constants/styles";
 import { Todo } from "@/types/todo";
-import { cn, formatMinutesToEn, formatTime } from "@/utils";
-import { ChevronDown, ChevronUp, Info } from "lucide-react";
+import { cn, formatMinutesToEn, formatTime, getCompletionRate } from "@/utils";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 import Modal from "../common/Modal";
 
@@ -22,10 +22,6 @@ const getRankColor = (idx: number) => {
   }
 };
 
-const getCompletionRate = (elapsedTime: number, goalTime: number) => {
-  return Math.floor((elapsedTime / (goalTime * 60)) * 100);
-};
-
 const getCompletionRateText = (todo: Todo) => {
   if (!todo.dailyGoalTime) return "N/A";
 
@@ -41,7 +37,7 @@ const modalTextStyle = "text-xl font-mono font-bold";
 
 export default function Dashbaord({ todos }: DashbaordProps) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [isInfoModalOpen, setIsInfoModalOpen] = useState<boolean>(false);
+  const [isDetailOpen, setIsDetailOpen] = useState<boolean>(false);
   const [selectedTodo, setSelectedTodo] = useState<Todo | null>(null);
 
   const totalElapsed = todos.reduce(
@@ -53,14 +49,14 @@ export default function Dashbaord({ todos }: DashbaordProps) {
     (a, b) => (b.elapsedTime ?? 0) - (a.elapsedTime ?? 0)
   );
 
-  const handleOpenInfo = (id: string) => {
+  const handleOpenDetail = (id: string) => {
     setSelectedTodo(todos.find((t) => t.id === id) ?? null);
-    setIsInfoModalOpen(true);
+    setIsDetailOpen(true);
   };
 
-  const handleCloseInfo = () => {
+  const handleCloseDetail = () => {
     setSelectedTodo(null);
-    setIsInfoModalOpen(false);
+    setIsDetailOpen(false);
   };
 
   const topThree = todosByTime.slice(0, 3);
@@ -126,20 +122,18 @@ export default function Dashbaord({ todos }: DashbaordProps) {
           <div className="space-y-2">
             <ul>
               {todosByTime.map((todo, idx) => (
-                <li key={todo.id} className={`${flexBetweenCn} px-1`}>
-                  <div className={cn(flexBetweenCn, "w-full", "mr-3")}>
-                    <span
-                      className={`text-lg font-semibold ${
-                        getRankColor(idx).text
-                      }`}
-                    >
-                      {idx + 1}. {todo.task}
-                    </span>
-                    <button onClick={() => handleOpenInfo(todo.id)}>
-                      <Info className="text-gray-600 font-bold" size={17} />
-                    </button>
-                  </div>
-
+                <li
+                  key={todo.id}
+                  onClick={() => handleOpenDetail(todo.id)}
+                  className={`${flexBetweenCn} px-1`}
+                >
+                  <span
+                    className={`text-lg font-semibold ${
+                      getRankColor(idx).text
+                    }`}
+                  >
+                    {idx + 1}. {todo.task}
+                  </span>
                   <span className="text-lg">
                     {formatTime(todo.elapsedTime ?? 0)}
                   </span>
@@ -149,9 +143,9 @@ export default function Dashbaord({ todos }: DashbaordProps) {
           </div>
         </div>
       </div>
-      <Modal isOpen={isInfoModalOpen} onClose={handleCloseInfo}>
+      <Modal isOpen={isDetailOpen} onClose={handleCloseDetail}>
         <div className={`${cn(flexCenterCn)} flex-col px-5 py-3 gap-2`}>
-          <span className="text-2xl font-mono font-bold">Todo Info</span>
+          <span className="text-2xl font-mono font-bold">Todo Detail</span>
           <div className="flex flex-col w-full">
             <span className={cn(modalTextStyle, "text-md font-semibold")}>
               Task
