@@ -1,9 +1,10 @@
 import { flexBetweenCn, flexCenterCn } from "@/constants/styles";
 import { Todo } from "@/types/todo";
-import { cn, formatMinutesToEn, formatTime, getCompletionRate } from "@/utils";
+import { formatTime } from "@/utils";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 import Modal from "../common/Modal";
+import TodoDetail from "./TodoDetail";
 
 type DashbaordProps = {
   todos: Todo[];
@@ -21,19 +22,6 @@ const getRankColor = (idx: number) => {
       return { bg: "bg-slate-400", text: "text-slate-400" };
   }
 };
-
-const getCompletionRateText = (todo: Todo) => {
-  if (!todo.dailyGoalTime) return "N/A";
-
-  return `${getCompletionRate(todo.elapsedTime, todo.dailyGoalTime)}%`;
-};
-
-const getGoalTimeText = (goalTime?: number) => {
-  if (!goalTime) return "Not Set";
-
-  return formatMinutesToEn(goalTime);
-};
-const modalTextStyle = "text-xl font-mono font-bold";
 
 export default function Dashbaord({ todos }: DashbaordProps) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -144,35 +132,7 @@ export default function Dashbaord({ todos }: DashbaordProps) {
         </div>
       </div>
       <Modal isOpen={isDetailOpen} onClose={handleCloseDetail}>
-        <div className={`${cn(flexCenterCn)} flex-col px-5 py-3 gap-2`}>
-          <span className="text-2xl font-mono font-bold">Todo Detail</span>
-          <div className="flex flex-col w-full">
-            <span className={cn(modalTextStyle, "text-md font-semibold")}>
-              Task
-            </span>
-            <span className={cn(modalTextStyle)}>
-              {selectedTodo ? selectedTodo.task : "no data"}
-            </span>
-          </div>
-          <div className="flex flex-col w-full">
-            <span className={cn(modalTextStyle, "text-md font-semibold")}>
-              Daily Goal Time
-            </span>
-            <span className={cn(modalTextStyle)}>
-              {selectedTodo
-                ? getGoalTimeText(selectedTodo.dailyGoalTime)
-                : "no data"}
-            </span>
-          </div>
-          <div className="flex flex-col w-full">
-            <span className={cn(modalTextStyle, "text-md font-semibold")}>
-              Completion Rate
-            </span>
-            <span className={cn(modalTextStyle)}>
-              {selectedTodo ? getCompletionRateText(selectedTodo) : "no data"}
-            </span>
-          </div>
-        </div>
+        <TodoDetail todo={selectedTodo} />
       </Modal>
     </div>
   );
