@@ -1,4 +1,4 @@
-import { flexCenterCn } from "@/constants/styles";
+import { basicButtonCn, flexCenterCn } from "@/constants/styles";
 import { Todo } from "@/types/todo";
 import {
   cn,
@@ -6,9 +6,11 @@ import {
   formatTimeToEn,
   getCompletionRate,
 } from "@/utils";
+import { useState } from "react";
+import TodoEditor from "./TodoEditor";
 
 type TodoDetailProps = {
-  todo: Todo | null;
+  todo: Todo;
 };
 
 const getGoalTimeText = (goalTime?: number) => {
@@ -41,23 +43,27 @@ const DetailLi = ({
 };
 
 export default function TodoDetail({ todo }: TodoDetailProps) {
+  const [isOnEdit, setIsOnEdit] = useState(false);
+
   const details = [
-    { label: "Task", content: todo?.task ?? "no data" },
+    { label: "Task", content: todo.task },
     {
       label: "Elapsed Time",
-      content: todo ? formatTimeToEn(todo.elapsedTime) : "no data",
+      content: formatTimeToEn(todo.elapsedTime),
     },
     {
       label: "Daily Goal Time",
-      content: todo ? getGoalTimeText(todo.dailyGoalTime) : "no data",
+      content: getGoalTimeText(todo.dailyGoalTime),
     },
     {
       label: "Completion Rate",
-      content: todo ? getCompletionRateText(todo) : "no data",
+      content: getCompletionRateText(todo),
     },
   ];
 
-  return (
+  return isOnEdit ? (
+    <TodoEditor todo={todo} onCreate={() => {}} onEdit={() => {}} />
+  ) : (
     <div className={`${cn(flexCenterCn)} flex-col px-5 py-3`}>
       <span className="text-2xl font-mono font-bold py-1.5">Todo Detail</span>
       <ul className="flex flex-col w-full p-2 gap-2">
@@ -65,6 +71,18 @@ export default function TodoDetail({ todo }: TodoDetailProps) {
           <DetailLi id={item.label} label={item.label} content={item.content} />
         ))}
       </ul>
+      <div className="flex w-full justify-end">
+        <button
+          onClick={() => setIsOnEdit(true)}
+          className={cn(
+            basicButtonCn,
+            "mt-1",
+            "text-white bg-gray-600 border-gray-800"
+          )}
+        >
+          Go To Edit
+        </button>
+      </div>
     </div>
   );
 }

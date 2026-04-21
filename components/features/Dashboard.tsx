@@ -132,7 +132,7 @@ export default function Dashbaord({ todos }: DashbaordProps) {
         </div>
       </div>
       <Modal isOpen={isDetailOpen} onClose={handleCloseDetail}>
-        <TodoDetail todo={selectedTodo} />
+        {selectedTodo ? <TodoDetail todo={selectedTodo} /> : <></>}
       </Modal>
     </div>
   );
