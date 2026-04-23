@@ -1,21 +1,17 @@
 import { basicButtonCn, flexCenterCn } from "@/constants/styles";
-import { Todo, TodoFormData } from "@/types/todo";
+import useTodoStore from "@/store/useTodoStore";
+import { createTodo, Todo, TodoFormData } from "@/types/todo";
 import { cn } from "@/utils";
 import { ChangeEvent, FormEvent, useState } from "react";
 
 type TodoEditorProps = {
   todo?: Todo;
-  onCreate: (data: TodoFormData) => void;
-  onEdit: (data: TodoFormData, id: string) => void;
 };
 
 const labelCn = "text-lg font-mono font-bold";
 
-export default function TodoEditor({
-  todo,
-  onCreate,
-  onEdit,
-}: TodoEditorProps) {
+export default function TodoEditor({ todo }: TodoEditorProps) {
+  const { updateTodo, addTodo } = useTodoStore();
   const [formData, setFormData] = useState<TodoFormData>({
     task: todo ? todo.task : "",
     dailyGoalTime: todo ? todo.dailyGoalTime : 0,
@@ -34,9 +30,9 @@ export default function TodoEditor({
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (isEdit) {
-      onEdit(formData, todo.id);
+      updateTodo(todo.id, formData);
     } else {
-      onCreate(formData);
+      addTodo(createTodo(formData.task, formData.dailyGoalTime));
     }
   };
 
@@ -86,4 +82,7 @@ export default function TodoEditor({
       </form>
     </div>
   );
+}
+function addTodo(newTodo: void) {
+  throw new Error("Function not implemented.");
 }

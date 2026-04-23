@@ -8,109 +8,34 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import {
-  arrayMove,
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import SortableItem from "@/components/features/SortableItem";
 import { createTodo, Todo, TodoFormData } from "@/types/todo";
 import TodoItem from "@/components/features/TodoItem";
-import { TimerStep } from "@/types/timer";
 import TaskPlayer from "@/components/features/TaskPlayer";
 import Dashbaord from "@/components/features/Dashboard";
 import { basicButtonCn, flexCenterCn } from "@/constants/styles";
 import { SquarePlus } from "lucide-react";
 import Modal from "@/components/common/Modal";
 import TodoEditor from "@/components/features/TodoEditor";
+import useTodoStore from "@/store/useTodoStore";
 
 export default function Home() {
-  const [todos, setTodos] = useState<Todo[]>([]);
-
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const todos = useTodoStore((state) => state.todos);
+  const { setTodos, addTodo, updateAllFields, setEditingTodo, moveTodo } =
+    useTodoStore();
   const [editingText, setEditingText] = useState<string>("");
-  const [timerStatus, setTimerStatus] = useState<TimerStep>("IDLE");
   const [isMounted, setIsMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  const startTimer = (id: string) => {
-    if (timerRef.current) clearInterval(timerRef.current);
-    setTimerStatus("RUNNING");
-
-    timerRef.current = setInterval(
-      () =>
-        setTodos((prev) =>
-          prev.map((t) =>
-            t.id === id ? { ...t, elapsedTime: (t.elapsedTime ?? 0) + 1 } : t
-          )
-        ),
-      1000
-    );
-  };
-
-  const stopTimer = () => {
-    if (timerRef.current) clearInterval(timerRef.current);
-    timerRef.current = null;
-    setTodos((prev) => prev.map((t) => ({ ...t, isRunning: false })));
-    setTimerStatus("IDLE");
-  };
-
-  const pauseTimer = () => {
-    if (timerRef.current) clearInterval(timerRef.current);
-    timerRef.current = null;
-    setTimerStatus("PAUSED");
-  };
-
   const handleAddTodo = () => {
     const newTodo = createTodo();
-    setTodos((prevTodos) => [newTodo, ...prevTodos]);
-    setEditingId(newTodo.id);
+    addTodo(newTodo);
+    setEditingTodo(newTodo);
     setEditingText("");
-  };
-
-  const handleCheckTodo = (checked: boolean, todo: Todo) => {
-    setTodos((prevTodos) => {
-      const newTodo = prevTodos.map((t) =>
-        t.id === todo.id ? { ...t, completed: checked } : t
-      );
-
-      const ing = newTodo.filter((t) => !t.completed);
-      const completed = newTodo.filter((t) => t.completed);
-
-      return [...ing, ...completed];
-    });
-  };
-
-  const startEdit = (todo: Todo) => {
-    setEditingId(todo.id);
-    setEditingText(todo.task);
-  };
-
-  const saveEdit = (id: string) => {
-    setTodos((prev) => {
-      if (!editingText.trim()) {
-        return prev.filter((t) => t.id !== id);
-      }
-
-      return prev.map((t) => (t.id === id ? { ...t, task: editingText } : t));
-    });
-    setEditingId(null);
-  };
-
-  const deleteTodo = (id: string) => {
-    setTodos((prev) => prev.filter((t) => t.id !== id));
-  };
-
-  const handleSelectTodo = (id: string) => {
-    setTodos((prev) => prev.map((t) => ({ ...t, isRunning: t.id === id })));
-  };
-
-  const resetElapsedTime = (id: string) => {
-    setTodos((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, elapsedTime: 0 } : t))
-    );
   };
 
   const sensors = useSensors(
@@ -127,12 +52,11 @@ export default function Home() {
     if (!over) return;
 
     if (active.id != over.id) {
-      setTodos((prev) => {
-        const oldIdx = prev.findIndex((todo) => todo.id === active.id);
-        const newIdx = prev.findIndex((todo) => todo.id === over.id);
+      const todos = useTodoStore.getState().todos; // 최신 상태 잠깐 참조
+      const oldIdx = todos.findIndex((todo) => todo.id === active.id);
+      const newIdx = todos.findIndex((todo) => todo.id === over.id);
 
-        return arrayMove(prev, oldIdx, newIdx);
-      });
+      moveTodo(oldIdx, newIdx);
     }
   };
 
@@ -142,7 +66,7 @@ export default function Home() {
     );
 
     if (isConfirmed) {
-      setTodos((prev) => prev.map((t) => ({ ...t, elapsedTime: 0 })));
+      updateAllFields("elapsedTime", 0);
     }
   };
 
@@ -150,26 +74,9 @@ export default function Home() {
     const isConfirmed = window.confirm("모든 투두를 삭제하시겠습니까?");
 
     if (isConfirmed) {
-      setTodos((prev) => []);
+      setTodos([]);
     }
   };
-
-  const handleCreateTodo = (data: TodoFormData) => {
-    let newTodo = createTodo(data.task, data.dailyGoalTime);
-    setTodos((prev) => [newTodo, ...prev]);
-  };
-
-  const handleEditTodo = (data: TodoFormData, id: string) => {
-    setTodos((prev) =>
-      prev.map((t) =>
-        t.id === id
-          ? { ...t, task: data.task, dailyGoalTime: data.dailyGoalTime }
-          : t
-      )
-    );
-  };
-
-  const runningTodo = todos.find((todo) => todo.isRunning);
 
   useEffect(() => {
     setIsMounted(true);
@@ -227,18 +134,7 @@ export default function Home() {
               Delete All Todos
             </button>
           </div>
-          <TaskPlayer
-            timerStatus={timerStatus}
-            todos={todos}
-            onSelectTodo={handleSelectTodo}
-            onPlayTimer={() => {
-              if (!runningTodo) return;
-              startTimer(runningTodo.id);
-            }}
-            onStopTimer={stopTimer}
-            onPauseTimer={pauseTimer}
-            onResetElapsedTime={resetElapsedTime}
-          />
+          <TaskPlayer />
           <Dashbaord todos={todos} />
         </header>
 
@@ -267,13 +163,8 @@ export default function Home() {
                       <TodoItem
                         key={todo.id}
                         todo={todo}
-                        isEditing={editingId === todo.id}
                         editingText={editingText}
-                        onToggle={handleCheckTodo}
-                        onStartEdit={startEdit}
                         onChangeEditingText={setEditingText}
-                        onSave={saveEdit}
-                        onDelete={deleteTodo}
                       />
                     </SortableItem>
                   ))}
@@ -284,7 +175,7 @@ export default function Home() {
         </main>
 
         <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-          <TodoEditor onCreate={handleCreateTodo} onEdit={handleEditTodo} />
+          <TodoEditor />
         </Modal>
       </div>
     </div>

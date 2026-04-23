@@ -3,28 +3,49 @@ import { Todo } from "@/types/todo";
 import { ChevronDown, Pause, Play, Square } from "lucide-react";
 import { formatTime, formatTimeToEn } from "@/utils";
 import { flexBetweenCn, flexCenterCn } from "@/constants/styles";
-
-type TaskPlayerProps = {
-  timerStatus: TimerStep;
-  todos: Todo[];
-  onSelectTodo: (value: string) => void;
-  onPlayTimer: () => void;
-  onStopTimer: () => void;
-  onPauseTimer: () => void;
-  onResetElapsedTime: (id: number) => void;
-};
+import { useRef, useState } from "react";
+import useTodoStore from "@/store/useTodoStore";
 
 const taskPlayerButtonStyle = `${flexCenterCn} w-12 h-12 border-2 border-white rounded-full hover:bg-white/10 transition-colors`;
 
-export default function TaskPlayer({
-  timerStatus,
-  todos,
-  onSelectTodo,
-  onPlayTimer,
-  onStopTimer,
-  onPauseTimer,
-  onResetElapsedTime,
-}: TaskPlayerProps) {
+export default function TaskPlayer() {
+  const todos = useTodoStore((state) => state.todos);
+  const { incrementTime, updateTodo } = useTodoStore();
+  const [timerStatus, setTimerStatus] = useState<TimerStep>("IDLE");
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const startTimer = (id?: string) => {
+    if (!id) return;
+    if (timerRef.current) clearInterval(timerRef.current);
+    setTimerStatus("RUNNING");
+
+    timerRef.current = setInterval(() => incrementTime(id), 1000);
+  };
+
+  const stopTimer = (id?: string) => {
+    if (!id) return;
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = null;
+    updateTodo(id, { isRunning: false });
+    setTimerStatus("IDLE");
+  };
+
+  const pauseTimer = () => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = null;
+    setTimerStatus("PAUSED");
+  };
+
+  const selectTodo = (id?: string) => {
+    if (!id) return;
+    updateTodo(id, { isRunning: true });
+  };
+
+  const resetElapsedTime = (id?: string) => {
+    if (!id) return;
+    updateTodo(id, { elapsedTime: 0 });
+  };
+
   const runningTodo = todos.find((todo) => todo.isRunning);
 
   return (
@@ -34,17 +55,17 @@ export default function TaskPlayer({
       {timerStatus === "IDLE" ? (
         <IdlePlayer
           todos={todos}
-          onSelectTodo={onSelectTodo}
-          onPlayTimer={onPlayTimer}
+          onSelectTodo={() => selectTodo(runningTodo?.id)}
+          onPlayTimer={() => startTimer(runningTodo?.id)}
         />
       ) : (
         <ActivePlayer
           runningTodo={runningTodo}
           timerStatus={timerStatus}
-          onPlayTimer={onPlayTimer}
-          onStopTimer={onStopTimer}
-          onPauseTimer={onPauseTimer}
-          onResetElapsedTime={onResetElapsedTime}
+          onPlayTimer={() => startTimer(runningTodo?.id)}
+          onStopTimer={() => stopTimer(runningTodo?.id)}
+          onPauseTimer={pauseTimer}
+          onResetElapsedTime={() => resetElapsedTime(runningTodo?.id)}
         />
       )}
     </div>
@@ -103,7 +124,7 @@ const ActivePlayer = ({
   onPlayTimer: () => void;
   onStopTimer: () => void;
   onPauseTimer: () => void;
-  onResetElapsedTime: (id: number) => void;
+  onResetElapsedTime: (id: string) => void;
 }) => {
   return (
     <>

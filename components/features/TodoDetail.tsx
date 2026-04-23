@@ -62,7 +62,7 @@ export default function TodoDetail({ todo }: TodoDetailProps) {
   ];
 
   return isOnEdit ? (
-    <TodoEditor todo={todo} onCreate={() => {}} onEdit={() => {}} />
+    <TodoEditor todo={todo} />
   ) : (
     <div className={`${cn(flexCenterCn)} flex-col px-5 py-3`}>
       <span className="text-2xl font-mono font-bold py-1.5">Todo Detail</span>

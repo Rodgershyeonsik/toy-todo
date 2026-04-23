@@ -1,40 +1,36 @@
+import useTodoStore from "@/store/useTodoStore";
 import { Todo } from "@/types/todo";
+import { useState } from "react";
 
 type TodoItemProps = {
   todo: Todo;
-  isEditing: boolean;
   editingText: string;
-  onToggle: (checked: boolean, todo: Todo) => void;
-  onStartEdit: (todo: Todo) => void;
   onChangeEditingText: (editingText: string) => void;
-  onSave: (id: string) => void;
-  onDelete: (id: string) => void;
 };
 
 export default function TodoItem({
   todo,
-  isEditing,
   editingText,
-  onToggle: onCheck,
-  onStartEdit,
   onChangeEditingText,
-  onSave,
-  onDelete,
 }: TodoItemProps) {
+  const editingTodo = useTodoStore((state) => state.editingTodo);
+  const { setEditingTodo, deleteTodo, toggleTodo, saveQuickEdit } =
+    useTodoStore();
+  const isEditing = editingTodo && editingTodo.id === todo.id;
   return (
     <>
       <input
         type="checkbox"
         className="scale-125"
         checked={todo.completed}
-        onChange={(e) => onCheck(e.target.checked, todo)}
+        onChange={(e) => toggleTodo(todo.id, e.target.checked)}
       />
       {isEditing ? (
         <input
           value={editingText}
           onChange={(e) => onChangeEditingText(e.target.value)}
-          onBlur={() => onSave(todo.id)}
-          onKeyDown={(e) => e.key === "Enter" && onSave(todo.id)}
+          onBlur={() => saveQuickEdit(editingText)}
+          onKeyDown={(e) => e.key === "Enter" && saveQuickEdit(editingText)}
           autoFocus
           className="text-lg border px-1"
         />
@@ -43,13 +39,13 @@ export default function TodoItem({
           <span
             className={`text-lg 
                       ${todo.completed ? "line-through text-gray-400" : ""}`}
-            onClick={() => onStartEdit(todo)}
+            onClick={() => setEditingTodo(todo)}
           >
             {todo.task}
           </span>
           <button
             className="opacity-0 group-hover:opacity-80 hover:text-red-500 hover:font-bold transition"
-            onClick={() => onDelete(todo.id)}
+            onClick={() => deleteTodo(todo.id)}
           >
             X
           </button>
