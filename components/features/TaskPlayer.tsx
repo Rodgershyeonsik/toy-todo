@@ -36,8 +36,7 @@ export default function TaskPlayer() {
     setTimerStatus("PAUSED");
   };
 
-  const selectTodo = (id?: string) => {
-    if (!id) return;
+  const selectTodo = (id: string) => {
     updateTodo(id, { isRunning: true });
   };
 
@@ -55,17 +54,18 @@ export default function TaskPlayer() {
       {timerStatus === "IDLE" ? (
         <IdlePlayer
           todos={todos}
-          onSelectTodo={() => selectTodo(runningTodo?.id)}
-          onPlayTimer={() => startTimer(runningTodo?.id)}
+          runningTodo={runningTodo}
+          onSelectTodo={selectTodo}
+          onPlayTimer={startTimer}
         />
       ) : (
         <ActivePlayer
           runningTodo={runningTodo}
           timerStatus={timerStatus}
-          onPlayTimer={() => startTimer(runningTodo?.id)}
-          onStopTimer={() => stopTimer(runningTodo?.id)}
+          onPlayTimer={startTimer}
+          onStopTimer={stopTimer}
           onPauseTimer={pauseTimer}
-          onResetElapsedTime={() => resetElapsedTime(runningTodo?.id)}
+          onResetElapsedTime={resetElapsedTime}
         />
       )}
     </div>
@@ -74,12 +74,14 @@ export default function TaskPlayer() {
 
 const IdlePlayer = ({
   todos,
+  runningTodo,
   onSelectTodo,
   onPlayTimer,
 }: {
   todos: Todo[];
+  runningTodo?: Todo;
   onSelectTodo: (value: string) => void;
-  onPlayTimer: () => void;
+  onPlayTimer: (id: string) => void;
 }) => {
   return (
     <div className={`${flexBetweenCn} w-full`}>
@@ -103,7 +105,7 @@ const IdlePlayer = ({
       </div>
       <button
         className={`${taskPlayerButtonStyle} shrink-0 ml-1.5`}
-        onClick={onPlayTimer}
+        onClick={() => onPlayTimer(runningTodo?.id ?? "")}
       >
         <Play className="fill-white stroke-none" />
       </button>
@@ -119,12 +121,12 @@ const ActivePlayer = ({
   onPauseTimer,
   onResetElapsedTime,
 }: {
-  runningTodo: Todo | undefined;
+  runningTodo?: Todo;
   timerStatus: TimerStep;
-  onPlayTimer: () => void;
-  onStopTimer: () => void;
+  onPlayTimer: (id?: string) => void;
+  onStopTimer: (id?: string) => void;
   onPauseTimer: () => void;
-  onResetElapsedTime: (id: string) => void;
+  onResetElapsedTime: (id?: string) => void;
 }) => {
   return (
     <>
@@ -136,22 +138,27 @@ const ActivePlayer = ({
           </span>
           <button
             className="bg-white/10 hover:bg-white/20 rounded-sm border border-gray-500 text-gray-50 text-sm font-semibold font-mono h-6 w-14"
-            onClick={() => {
-              if (runningTodo) onResetElapsedTime(runningTodo.id);
-            }}
+            onClick={() => onResetElapsedTime(runningTodo?.id)}
           >
             Reset
           </button>
         </div>
       </div>
       <div className="flex gap-1.5">
-        <button className={taskPlayerButtonStyle} onClick={onStopTimer}>
+        <button
+          className={taskPlayerButtonStyle}
+          onClick={() => onStopTimer(runningTodo?.id)}
+        >
           <Square className="fill-white stroke-none" />
         </button>
 
         <button
           className={taskPlayerButtonStyle}
-          onClick={timerStatus === "PAUSED" ? onPlayTimer : onPauseTimer}
+          onClick={
+            timerStatus === "PAUSED"
+              ? () => onPlayTimer(runningTodo?.id)
+              : onPauseTimer
+          }
         >
           {timerStatus === "PAUSED" ? (
             <Play className="fill-white stroke-none" />
