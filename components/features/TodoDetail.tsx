@@ -26,16 +26,14 @@ const getCompletionRateText = (todo: Todo) => {
 };
 
 const DetailLi = ({
-  id,
   label,
   content,
 }: {
-  id: string;
   label: string;
   content: React.ReactNode;
 }) => {
   return (
-    <li key={id} className="flex flex-col w-full">
+    <li key={label} className="flex flex-col w-full">
       <span className="text-md font-mono font-semibold">{label}</span>
       <span className="text-xl font-mono font-bold">{content}</span>
     </li>
@@ -68,7 +66,7 @@ export default function TodoDetail({ todo }: TodoDetailProps) {
       <span className="text-2xl font-mono font-bold py-1.5">Todo Detail</span>
       <ul className="flex flex-col w-full p-2 gap-2">
         {details.map((item) => (
-          <DetailLi id={item.label} label={item.label} content={item.content} />
+          <DetailLi label={item.label} content={item.content} />
         ))}
       </ul>
       <div className="flex w-full justify-end">
