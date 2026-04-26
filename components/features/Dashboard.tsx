@@ -3,8 +3,8 @@ import { Todo } from "@/types/todo";
 import { formatTime } from "@/utils";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
-import Modal from "../common/Modal";
 import TodoDetail from "./TodoDetail";
+import { useModalStore } from "@/store/useModalStore";
 
 type DashbaordProps = {
   todos: Todo[];
@@ -24,9 +24,8 @@ const getRankColor = (idx: number) => {
 };
 
 export default function Dashbaord({ todos }: DashbaordProps) {
+  const { openModal } = useModalStore();
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [isDetailOpen, setIsDetailOpen] = useState<boolean>(false);
-  const [selectedTodo, setSelectedTodo] = useState<Todo | null>(null);
 
   const totalElapsed = todos.reduce(
     (acc, todo) => acc + (todo.elapsedTime ?? 0),
@@ -38,13 +37,8 @@ export default function Dashbaord({ todos }: DashbaordProps) {
   );
 
   const handleOpenDetail = (id: string) => {
-    setSelectedTodo(todos.find((t) => t.id === id) ?? null);
-    setIsDetailOpen(true);
-  };
-
-  const handleCloseDetail = () => {
-    setSelectedTodo(null);
-    setIsDetailOpen(false);
+    const target = todos.find((t) => t.id === id);
+    if (target) openModal(<TodoDetail todo={target} />);
   };
 
   const topThree = todosByTime.slice(0, 3);
@@ -131,9 +125,6 @@ export default function Dashbaord({ todos }: DashbaordProps) {
           </div>
         </div>
       </div>
-      <Modal isOpen={isDetailOpen} onClose={handleCloseDetail}>
-        {selectedTodo ? <TodoDetail todo={selectedTodo} /> : <></>}
-      </Modal>
     </div>
   );
 }

@@ -31,8 +31,10 @@ export default function TodoEditor({ todo }: TodoEditorProps) {
     e.preventDefault();
     if (isEdit) {
       updateTodo(todo.id, formData);
+      window.confirm("할 일 수정이 완료되었습니다!");
     } else {
       addTodo(createTodo(formData.task, formData.dailyGoalTime));
+      window.confirm("할 일 추가가 완료되었습니다!");
     }
   };
 
@@ -82,7 +84,4 @@ export default function TodoEditor({ todo }: TodoEditorProps) {
       </form>
     </div>
   );
-}
-function addTodo(newTodo: void) {
-  throw new Error("Function not implemented.");
 }

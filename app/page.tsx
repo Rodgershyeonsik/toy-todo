@@ -13,23 +13,24 @@ import {
 } from "@dnd-kit/sortable";
 import { useEffect, useState } from "react";
 import SortableItem from "@/components/features/SortableItem";
-import { createTodo, Todo, TodoFormData } from "@/types/todo";
+import { createTodo } from "@/types/todo";
 import TodoItem from "@/components/features/TodoItem";
 import TaskPlayer from "@/components/features/TaskPlayer";
 import Dashbaord from "@/components/features/Dashboard";
 import { basicButtonCn, flexCenterCn } from "@/constants/styles";
 import { SquarePlus } from "lucide-react";
-import Modal from "@/components/common/Modal";
 import TodoEditor from "@/components/features/TodoEditor";
 import useTodoStore from "@/store/useTodoStore";
+import GlobalModal from "@/components/GlobalModal";
+import { useModalStore } from "@/store/useModalStore";
 
 export default function Home() {
   const todos = useTodoStore((state) => state.todos);
   const { setTodos, addTodo, updateAllFields, setEditingTodo, moveTodo } =
     useTodoStore();
+  const { openModal } = useModalStore();
   const [editingText, setEditingText] = useState<string>("");
   const [isMounted, setIsMounted] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
 
   const handleAddTodo = () => {
     const newTodo = createTodo();
@@ -112,7 +113,7 @@ export default function Home() {
                 할 일을 정리하고 완료해보십시다리^ㅡ^
               </span>
             </div>
-            <button onClick={() => setIsOpen(true)}>
+            <button onClick={() => openModal(<TodoEditor />)}>
               <SquarePlus
                 className="text-gray-400 hover:text-blue-400"
                 size={40}
@@ -173,10 +174,6 @@ export default function Home() {
             </DndContext>
           </div>
         </main>
-
-        <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-          <TodoEditor />
-        </Modal>
       </div>
     </div>
   );
