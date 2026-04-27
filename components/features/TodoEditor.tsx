@@ -1,8 +1,11 @@
 import { basicButtonCn, flexCenterCn } from "@/constants/styles";
+import { useModalStore } from "@/store/useModalStore";
 import useTodoStore from "@/store/useTodoStore";
 import { createTodo, Todo, TodoFormData } from "@/types/todo";
 import { cn } from "@/utils";
 import { ChangeEvent, FormEvent, useState } from "react";
+import ModalConfirm from "../common/ModalConfirm";
+import { CircleX } from "lucide-react";
 
 type TodoEditorProps = {
   todo?: Todo;
@@ -12,6 +15,7 @@ const labelCn = "text-lg font-mono font-bold";
 
 export default function TodoEditor({ todo }: TodoEditorProps) {
   const { updateTodo, addTodo } = useTodoStore();
+  const { openModal, closeModal } = useModalStore();
   const [formData, setFormData] = useState<TodoFormData>({
     task: todo ? todo.task : "",
     dailyGoalTime: todo ? todo.dailyGoalTime : 0,
@@ -31,10 +35,10 @@ export default function TodoEditor({ todo }: TodoEditorProps) {
     e.preventDefault();
     if (isEdit) {
       updateTodo(todo.id, formData);
-      window.confirm("할 일 수정이 완료되었습니다!");
+      openModal(<ModalConfirm text={"할 일 수정 완료!"} />);
     } else {
       addTodo(createTodo(formData.task, formData.dailyGoalTime));
-      window.confirm("할 일 추가가 완료되었습니다!");
+      openModal(<ModalConfirm text={"할 일 추가 완료!"} />);
     }
   };
 
@@ -43,6 +47,11 @@ export default function TodoEditor({ todo }: TodoEditorProps) {
 
   return (
     <div className={`${flexCenterCn} flex-col min-w-sm px-5 py-3`}>
+      <div className="flex w-full justify-end">
+        <button onClick={closeModal}>
+          <CircleX color="#c8c1c1" />
+        </button>
+      </div>
       <h1 className="text-2xl font-bold font-mono">{title}</h1>
       <form className="w-full" onSubmit={handleSubmit}>
         <div className="my-5">

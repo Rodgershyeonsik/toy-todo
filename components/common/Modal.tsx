@@ -1,5 +1,3 @@
-import { CircleX } from "lucide-react";
-
 type ModalProps = {
   onClose: () => void;
   children?: React.ReactNode;
@@ -15,11 +13,6 @@ export default function Modal({ onClose, children }: ModalProps) {
         onClick={(e) => e.stopPropagation()}
         className="bg-white rounded-lg p-3 min-w-75"
       >
-        <div className="flex justify-end">
-          <button onClick={onClose}>
-            <CircleX color="#c8c1c1" />
-          </button>
-        </div>
         {children}
       </div>
     </div>
