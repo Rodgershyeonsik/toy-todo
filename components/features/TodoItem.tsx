@@ -1,6 +1,5 @@
 import useTodoStore from "@/store/useTodoStore";
 import { Todo } from "@/types/todo";
-import { useState } from "react";
 
 type TodoItemProps = {
   todo: Todo;
