@@ -21,7 +21,6 @@ import { basicButtonCn, flexCenterCn } from "@/constants/styles";
 import { SquarePlus } from "lucide-react";
 import TodoEditor from "@/components/features/TodoEditor";
 import useTodoStore from "@/store/useTodoStore";
-import GlobalModal from "@/components/GlobalModal";
 import { useModalStore } from "@/store/useModalStore";
 
 export default function Home() {
@@ -136,7 +135,7 @@ export default function Home() {
             </button>
           </div>
           <TaskPlayer />
-          <Dashbaord todos={todos} />
+          <Dashbaord />
         </header>
 
         <main>

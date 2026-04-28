@@ -1,14 +1,10 @@
 import { flexBetweenCn, flexCenterCn } from "@/constants/styles";
-import { Todo } from "@/types/todo";
 import { formatTime } from "@/utils";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 import TodoDetail from "./TodoDetail";
 import { useModalStore } from "@/store/useModalStore";
-
-type DashbaordProps = {
-  todos: Todo[];
-};
+import useTodoStore from "@/store/useTodoStore";
 
 const getRankColor = (idx: number) => {
   switch (idx) {
@@ -23,7 +19,8 @@ const getRankColor = (idx: number) => {
   }
 };
 
-export default function Dashbaord({ todos }: DashbaordProps) {
+export default function Dashbaord() {
+  const todos = useTodoStore((state) => state.todos);
   const { openModal } = useModalStore();
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
