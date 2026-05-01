@@ -8,6 +8,8 @@ import {
 } from "@/utils";
 import { useState } from "react";
 import TodoEditor from "./TodoEditor";
+import { CircleX } from "lucide-react";
+import { useModalStore } from "@/store/useModalStore";
 
 type TodoDetailProps = {
   todo: Todo;
@@ -41,6 +43,7 @@ const DetailLi = ({
 };
 
 export default function TodoDetail({ todo }: TodoDetailProps) {
+  const { closeModal } = useModalStore();
   const [isOnEdit, setIsOnEdit] = useState(false);
 
   const details = [
@@ -62,7 +65,12 @@ export default function TodoDetail({ todo }: TodoDetailProps) {
   return isOnEdit ? (
     <TodoEditor todo={todo} />
   ) : (
-    <div className={`${cn(flexCenterCn)} flex-col px-5 py-3`}>
+    <div className={`${cn(flexCenterCn)} flex-col px-2 py-2`}>
+      <div className="flex w-full justify-end">
+        <button onClick={closeModal}>
+          <CircleX color="#c8c1c1" />
+        </button>
+      </div>
       <span className="text-2xl font-mono font-bold py-1.5">Todo Detail</span>
       <ul className="flex flex-col w-full p-2 gap-2">
         {details.map((item) => (
