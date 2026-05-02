@@ -5,6 +5,7 @@ import { useState } from "react";
 import TodoDetail from "./TodoDetail";
 import { useModalStore } from "@/store/useModalStore";
 import useTodoStore from "@/store/useTodoStore";
+import { Todo } from "@/types/todo";
 
 const getRankColor = (idx: number) => {
   switch (idx) {
@@ -64,64 +65,89 @@ export default function Dashbaord() {
         }`}
       >
         <div className="p-4 space-y-6">
-          <div
-            className={`${flexCenterCn} w-full h-8 bg-gray-500 overflow-hidden shadow-inner`}
-          >
-            {totalElapsed === 0 && (
-              <span className="text-white text-lg font-semibold font-mono">
-                no data
-              </span>
-            )}
-            {totalElapsed > 0 && (
-              <>
-                {topThree.map((todo, idx) => (
-                  <div
-                    key={todo.id}
-                    className={`${
-                      getRankColor(idx).bg
-                    } h-full transition-all duration-700 ease-out border-r border-white/20`}
-                    style={{
-                      width: `${(todo.elapsedTime / totalElapsed) * 100}%`,
-                    }}
-                  />
-                ))}
-                {todosByTime.length > 3 && (
-                  <div
-                    className={`${
-                      getRankColor(3).bg
-                    } h-full transition-all duration-700 ease-out`}
-                    style={{
-                      width: `${(othersTotal / totalElapsed) * 100}%`,
-                    }}
-                  />
-                )}
-              </>
-            )}
-          </div>
+          <TimeCompositionBar
+            topThree={topThree}
+            total={totalElapsed}
+            others={othersTotal}
+          />
           <div className="space-y-2">
-            <ul>
-              {todosByTime.map((todo, idx) => (
-                <li
-                  key={todo.id}
-                  onClick={() => handleOpenDetail(todo.id)}
-                  className={`${flexBetweenCn} px-1`}
-                >
-                  <span
-                    className={`text-lg font-semibold ${
-                      getRankColor(idx).text
-                    }`}
-                  >
-                    {idx + 1}. {todo.task}
-                  </span>
-                  <span className="text-lg">
-                    {formatTime(todo.elapsedTime ?? 0)}
-                  </span>
-                </li>
-              ))}
-            </ul>
+            <TodoTimeRanking
+              todos={todosByTime}
+              onClickItem={handleOpenDetail}
+            />
           </div>
         </div>
       </div>
     </div>
   );
 }
+
+const TimeCompositionBar = ({
+  topThree,
+  total,
+  others,
+}: {
+  topThree: Todo[];
+  total: number;
+  others: number;
+}) => {
+  return (
+    <div
+      className={`${flexCenterCn} w-full h-8 bg-gray-500 overflow-hidden shadow-inner`}
+    >
+      {total === 0 && (
+        <span className="text-white text-lg font-semibold font-mono">
+          no data
+        </span>
+      )}
+      {total > 0 && (
+        <>
+          {topThree.map((todo, idx) => (
+            <div
+              key={todo.id}
+              className={`${
+                getRankColor(idx).bg
+              } h-full transition-all duration-700 ease-out border-r border-white/20`}
+              style={{
+                width: `${(todo.elapsedTime / total) * 100}%`,
+              }}
+            />
+          ))}
+          <div
+            className={`${
+              getRankColor(3).bg
+            } h-full transition-all duration-700 ease-out`}
+            style={{
+              width: `${(others / total) * 100}%`,
+            }}
+          />
+        </>
+      )}
+    </div>
+  );
+};
+
+const TodoTimeRanking = ({
+  todos,
+  onClickItem,
+}: {
+  todos: Todo[];
+  onClickItem: (id: string) => void;
+}) => {
+  return (
+    <ul>
+      {todos.map((todo, idx) => (
+        <li
+          key={todo.id}
+          onClick={() => onClickItem(todo.id)}
+          className={`${flexBetweenCn} px-1`}
+        >
+          <span className={`text-lg font-semibold ${getRankColor(idx).text}`}>
+            {idx + 1}. {todo.task}
+          </span>
+          <span className="text-lg">{formatTime(todo.elapsedTime ?? 0)}</span>
+        </li>
+      ))}
+    </ul>
+  );
+};
