@@ -22,14 +22,24 @@ import { SquarePlus } from "lucide-react";
 import TodoEditor from "@/components/features/TodoEditor";
 import useTodoStore from "@/store/useTodoStore";
 import { useModalStore } from "@/store/useModalStore";
+import { useQuery } from "@tanstack/react-query";
+import { fetchTodos } from "@/api/api";
+import { cn } from "@/utils";
 
 export default function Home() {
+  const {
+    data: localTodos,
+    isLoading,
+    isSuccess,
+  } = useQuery({
+    queryKey: ["todos"],
+    queryFn: fetchTodos,
+  });
   const todos = useTodoStore((state) => state.todos);
   const { setTodos, addTodo, updateAllFields, setEditingTodo, moveTodo } =
     useTodoStore();
   const { openModal } = useModalStore();
   const [editingText, setEditingText] = useState<string>("");
-  const [isMounted, setIsMounted] = useState(false);
 
   const handleAddTodo = () => {
     const newTodo = createTodo();
@@ -79,27 +89,17 @@ export default function Home() {
   };
 
   useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  useEffect(() => {
-    const savedTodos = localStorage.getItem("my-todos");
-    if (savedTodos) {
-      try {
-        setTodos(JSON.parse(savedTodos));
-      } catch (error) {
-        console.error("데이터 불러오기 실패", error);
-      }
+    if (isSuccess && localTodos) {
+      setTodos(localTodos);
     }
-  }, []);
+  }, [isSuccess, localTodos]);
 
-  useEffect(() => {
-    if (isMounted) {
-      localStorage.setItem("my-todos", JSON.stringify(todos));
-    }
-  }, [todos, isMounted]);
-
-  if (!isMounted) return null;
+  if (isLoading)
+    return (
+      <div className={cn(flexCenterCn, "w-full h-full")}>
+        <span> LOADING...</span>
+      </div>
+    );
 
   return (
     <div className="min-h-screen flex justify-center">
