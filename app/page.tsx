@@ -11,7 +11,7 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import SortableItem from "@/components/features/SortableItem";
 import { createTodo } from "@/types/todo";
 import TodoItem from "@/components/features/TodoItem";
@@ -22,19 +22,11 @@ import { SquarePlus } from "lucide-react";
 import TodoEditor from "@/components/features/TodoEditor";
 import useTodoStore from "@/store/useTodoStore";
 import { useModalStore } from "@/store/useModalStore";
-import { useQuery } from "@tanstack/react-query";
-import { fetchTodos } from "@/api/api";
 import { cn } from "@/utils";
+import { useTodos } from "@/hooks/useTodos";
 
 export default function Home() {
-  const {
-    data: localTodos,
-    isLoading,
-    isSuccess,
-  } = useQuery({
-    queryKey: ["todos"],
-    queryFn: fetchTodos,
-  });
+  const { isLoading } = useTodos();
   const todos = useTodoStore((state) => state.todos);
   const { setTodos, addTodo, updateAllFields, setEditingTodo, moveTodo } =
     useTodoStore();
@@ -88,15 +80,9 @@ export default function Home() {
     }
   };
 
-  useEffect(() => {
-    if (isSuccess && localTodos) {
-      setTodos(localTodos);
-    }
-  }, [isSuccess, localTodos]);
-
   if (isLoading)
     return (
-      <div className={cn(flexCenterCn, "w-full h-full")}>
+      <div className={cn(flexCenterCn, "w-full h-screen")}>
         <span> LOADING...</span>
       </div>
     );
