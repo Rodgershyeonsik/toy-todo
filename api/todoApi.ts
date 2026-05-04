@@ -1,4 +1,6 @@
-export const fetchTodos = async () => {
+import { Todo } from "@/types/todo";
+
+export const fetchTodos = async (): Promise<Todo[]> => {
   // 브라우저 환경 확인 (Next.js 대응)
   if (typeof window === "undefined") return [];
 
