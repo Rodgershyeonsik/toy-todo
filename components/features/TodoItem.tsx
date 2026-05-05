@@ -1,3 +1,4 @@
+import { useTodoMutation } from "@/hooks/useTodoMutation";
 import useTodoStore from "@/store/useTodoStore";
 import { Todo } from "@/types/todo";
 
@@ -12,10 +13,24 @@ export default function TodoItem({
   editingText,
   onChangeEditingText,
 }: TodoItemProps) {
+  const { updateTodos } = useTodoMutation();
   const editingTodo = useTodoStore((state) => state.editingTodo);
   const { setEditingTodo, deleteTodo, toggleTodo, saveQuickEdit } =
     useTodoStore();
   const isEditing = editingTodo && editingTodo.id === todo.id;
+
+  const handleSaveTodo = (text: string) => {
+    saveQuickEdit(text);
+    const latestTodos = useTodoStore.getState().todos;
+    updateTodos(latestTodos);
+  };
+
+  const handleDeleteTodo = (id: string) => {
+    deleteTodo(id);
+    const latestTodos = useTodoStore.getState().todos;
+    updateTodos(latestTodos);
+  };
+
   return (
     <>
       <input
@@ -28,8 +43,8 @@ export default function TodoItem({
         <input
           value={editingText}
           onChange={(e) => onChangeEditingText(e.target.value)}
-          onBlur={() => saveQuickEdit(editingText)}
-          onKeyDown={(e) => e.key === "Enter" && saveQuickEdit(editingText)}
+          onBlur={() => handleSaveTodo(editingText)}
+          onKeyDown={(e) => e.key === "Enter" && handleSaveTodo(editingText)}
           autoFocus
           className="text-lg border px-1"
         />
@@ -44,7 +59,7 @@ export default function TodoItem({
           </span>
           <button
             className="opacity-0 group-hover:opacity-80 hover:text-red-500 hover:font-bold transition"
-            onClick={() => deleteTodo(todo.id)}
+            onClick={() => handleDeleteTodo(todo.id)}
           >
             X
           </button>

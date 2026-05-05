@@ -17,6 +17,7 @@ export const useTodos = () => {
 
   // TanStack Query v5 대응: 데이터가 변경될 때마다 Zustand 동기화
   useEffect(() => {
+    console.log("useTodos useEffect");
     if (query.data) {
       setTodos(query.data);
     }

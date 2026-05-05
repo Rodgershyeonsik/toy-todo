@@ -11,3 +11,9 @@ export const fetchTodos = async (): Promise<Todo[]> => {
 
   return saved ? JSON.parse(saved) : [];
 };
+
+export const saveTodos = async (todos: Todo[]): Promise<Todo[]> => {
+  localStorage.setItem("my-todos", JSON.stringify(todos));
+  await new Promise((resolve) => setTimeout(resolve, 100));
+  return todos;
+};

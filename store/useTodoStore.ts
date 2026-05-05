@@ -25,7 +25,10 @@ const useTodoStore = create<TodoState>((set) => ({
   selectedTodo: null,
 
   setTodos: (todos) => set({ todos }),
-  setEditingTodo: (todo) => set({ editingTodo: todo }),
+  setEditingTodo: (todo) => {
+    console.log("ddd");
+    return set({ editingTodo: todo });
+  },
   addTodo: (newTodo) =>
     set((state) => ({
       todos: [newTodo, ...state.todos],
