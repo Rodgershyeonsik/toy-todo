@@ -4,9 +4,11 @@ import { arrayMove } from "@dnd-kit/sortable";
 
 interface TodoState {
   todos: Todo[];
+  quickEditingText: string;
   editingTodo: Todo | null;
   selectedTodo: Todo | null;
   setTodos: (todos: Todo[]) => void;
+  setQuickEditingText: (text: string) => void;
   setEditingTodo: (todo: Todo) => void;
   addTodo: (newTodo: Todo) => void;
   updateTodo: (id: string, updates: Partial<Todo>) => void;
@@ -23,8 +25,10 @@ const useTodoStore = create<TodoState>((set) => ({
   todos: [],
   editingTodo: null,
   selectedTodo: null,
+  quickEditingText: "",
 
   setTodos: (todos) => set({ todos }),
+  setQuickEditingText: (text) => set({ quickEditingText: text }),
   setEditingTodo: (todo) => {
     console.log("ddd");
     return set({ editingTodo: todo });

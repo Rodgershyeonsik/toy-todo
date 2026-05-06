@@ -11,7 +11,6 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { useState } from "react";
 import SortableItem from "@/components/features/SortableItem";
 import { createTodo } from "@/types/todo";
 import TodoItem from "@/components/features/TodoItem";
@@ -28,16 +27,21 @@ import { useTodos } from "@/hooks/useTodos";
 export default function Home() {
   const { isLoading } = useTodos();
   const todos = useTodoStore((state) => state.todos);
-  const { setTodos, addTodo, updateAllFields, setEditingTodo, moveTodo } =
-    useTodoStore();
+  const {
+    setTodos,
+    addTodo,
+    updateAllFields,
+    setEditingTodo,
+    moveTodo,
+    setQuickEditingText,
+  } = useTodoStore();
   const { openModal } = useModalStore();
-  const [editingText, setEditingText] = useState<string>("");
 
   const handleAddTodo = () => {
     const newTodo = createTodo();
     addTodo(newTodo);
     setEditingTodo(newTodo);
-    setEditingText("");
+    setQuickEditingText("");
   };
 
   const sensors = useSensors(
@@ -146,12 +150,7 @@ export default function Home() {
                       id={todo.id}
                       className="flex items-center gap-2 group"
                     >
-                      <TodoItem
-                        key={todo.id}
-                        todo={todo}
-                        editingText={editingText}
-                        onChangeEditingText={setEditingText}
-                      />
+                      <TodoItem key={todo.id} todo={todo} />
                     </SortableItem>
                   ))}
                 </ul>

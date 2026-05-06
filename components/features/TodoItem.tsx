@@ -4,19 +4,19 @@ import { Todo } from "@/types/todo";
 
 type TodoItemProps = {
   todo: Todo;
-  editingText: string;
-  onChangeEditingText: (editingText: string) => void;
 };
 
-export default function TodoItem({
-  todo,
-  editingText,
-  onChangeEditingText,
-}: TodoItemProps) {
+export default function TodoItem({ todo }: TodoItemProps) {
   const { updateTodos } = useTodoMutation();
   const editingTodo = useTodoStore((state) => state.editingTodo);
-  const { setEditingTodo, deleteTodo, toggleTodo, saveQuickEdit } =
-    useTodoStore();
+  const editingText = useTodoStore((state) => state.quickEditingText);
+  const {
+    setEditingTodo,
+    deleteTodo,
+    toggleTodo,
+    saveQuickEdit,
+    setQuickEditingText,
+  } = useTodoStore();
   const isEditing = editingTodo && editingTodo.id === todo.id;
 
   const handleSaveTodo = (text: string) => {
@@ -42,7 +42,7 @@ export default function TodoItem({
       {isEditing ? (
         <input
           value={editingText}
-          onChange={(e) => onChangeEditingText(e.target.value)}
+          onChange={(e) => setQuickEditingText(e.target.value)}
           onBlur={() => handleSaveTodo(editingText)}
           onKeyDown={(e) => e.key === "Enter" && handleSaveTodo(editingText)}
           autoFocus
@@ -53,7 +53,10 @@ export default function TodoItem({
           <span
             className={`text-lg 
                       ${todo.completed ? "line-through text-gray-400" : ""}`}
-            onClick={() => setEditingTodo(todo)}
+            onClick={() => {
+              setQuickEditingText(todo.task);
+              setEditingTodo(todo);
+            }}
           >
             {todo.task}
           </span>
