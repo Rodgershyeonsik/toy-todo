@@ -23,6 +23,7 @@ import useTodoStore from "@/store/useTodoStore";
 import { useModalStore } from "@/store/useModalStore";
 import { cn } from "@/utils";
 import { useTodos } from "@/hooks/useTodos";
+import { useBeforeUnloadSync } from "@/hooks/useBeforeUnloadSync";
 
 export default function Home() {
   const { isLoading } = useTodos();
@@ -83,6 +84,8 @@ export default function Home() {
       setTodos([]);
     }
   };
+
+  useBeforeUnloadSync();
 
   if (isLoading)
     return (
