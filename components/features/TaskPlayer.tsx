@@ -5,10 +5,12 @@ import { formatTime, formatTimeToEn } from "@/utils";
 import { flexBetweenCn, flexCenterCn } from "@/constants/styles";
 import { useRef, useState } from "react";
 import useTodoStore from "@/store/useTodoStore";
+import { useTodoMutation } from "@/hooks/useTodoMutation";
 
 const taskPlayerButtonStyle = `${flexCenterCn} w-12 h-12 border-2 border-white rounded-full hover:bg-white/10 transition-colors`;
 
 export default function TaskPlayer() {
+  const { updateTodos } = useTodoMutation();
   const todos = useTodoStore((state) => state.todos);
   const { incrementTime, updateTodo } = useTodoStore();
   const [timerStatus, setTimerStatus] = useState<TimerStep>("IDLE");
@@ -27,11 +29,17 @@ export default function TaskPlayer() {
     if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = null;
     updateTodo(id, { isRunning: false });
+    const latestTodos = useTodoStore.getState().todos;
+    updateTodos(latestTodos);
     setTimerStatus("IDLE");
   };
 
   const pauseTimer = () => {
-    if (timerRef.current) clearInterval(timerRef.current);
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      const latestTodos = useTodoStore.getState().todos;
+      updateTodos(latestTodos);
+    }
     timerRef.current = null;
     setTimerStatus("PAUSED");
   };

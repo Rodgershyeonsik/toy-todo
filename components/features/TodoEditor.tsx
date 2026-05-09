@@ -6,6 +6,7 @@ import { cn } from "@/utils";
 import { ChangeEvent, FormEvent, useState } from "react";
 import ModalConfirm from "../common/ModalConfirm";
 import { CircleX } from "lucide-react";
+import { useTodoMutation } from "@/hooks/useTodoMutation";
 
 type TodoEditorProps = {
   todo?: Todo;
@@ -14,6 +15,7 @@ type TodoEditorProps = {
 const labelCn = "text-lg font-mono font-bold";
 
 export default function TodoEditor({ todo }: TodoEditorProps) {
+  const { updateTodos } = useTodoMutation();
   const { updateTodo, addTodo } = useTodoStore();
   const { openModal, closeModal } = useModalStore();
   const [formData, setFormData] = useState<TodoFormData>({
@@ -40,6 +42,8 @@ export default function TodoEditor({ todo }: TodoEditorProps) {
       addTodo(createTodo(formData.task, formData.dailyGoalTime));
       openModal(<ModalConfirm text={"할 일 추가 완료!"} />);
     }
+    const latestTodos = useTodoStore.getState().todos;
+    updateTodos(latestTodos);
   };
 
   const title = !isEdit ? "Create Todo!" : "Edit Todo!";
