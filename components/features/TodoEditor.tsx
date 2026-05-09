@@ -26,10 +26,11 @@ export default function TodoEditor({ todo }: TodoEditorProps) {
   const isEdit = !!todo;
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]:
+        type === "number" ? (value === "" ? undefined : Number(value)) : value,
     }));
   };
 
