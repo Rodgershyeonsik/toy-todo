@@ -30,7 +30,6 @@ const useTodoStore = create<TodoState>((set) => ({
   setTodos: (todos) => set({ todos }),
   setQuickEditingText: (text) => set({ quickEditingText: text }),
   setEditingTodo: (todo) => {
-    console.log("ddd");
     return set({ editingTodo: todo });
   },
   addTodo: (newTodo) =>
