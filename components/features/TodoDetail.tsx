@@ -36,7 +36,9 @@ const DetailLi = ({
 }) => {
   return (
     <li className="flex flex-col w-full">
-      <span className="text-md font-mono font-semibold">{label}</span>
+      <span className="text-md text-gray-600 font-mono font-semibold">
+        {label}
+      </span>
       <span className="text-xl font-mono font-bold">{content}</span>
     </li>
   );
@@ -72,7 +74,7 @@ export default function TodoDetail({ todo }: TodoDetailProps) {
         </button>
       </div>
       <span className="text-2xl font-mono font-bold py-1.5">Todo Detail</span>
-      <ul className="flex flex-col w-full p-2 gap-2">
+      <ul className="flex flex-col w-full p-2 gap-3">
         {details.map((item) => (
           <DetailLi
             key={item.label}
