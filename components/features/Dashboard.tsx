@@ -1,5 +1,5 @@
 import { flexBetweenCn, flexCenterCn } from "@/constants/styles";
-import { formatTime } from "@/utils";
+import { cn, formatTime } from "@/utils";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 import TodoDetail from "./TodoDetail";
@@ -48,16 +48,14 @@ export default function Dashbaord() {
 
   return (
     <div className="bg-gray-200 rounded-sm overflow-hidden transition-all duration-500 ease-in-out">
-      <div className={`${flexBetweenCn} p-3`}>
+      <div
+        className={cn(flexBetweenCn, "p-3")}
+        onClick={() => setIsOpen(!isOpen)}
+      >
         <span className="text-lg font-bold font-mono">
           {`Total Elapsed Time | ${formatTime(totalElapsed)}`}
         </span>
-        <button
-          className="p-1 hover:bg-gray-300 rounded-full transition-colors"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-        </button>
+        {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
       </div>
       <div
         className={`transition-all duration-500 ease-in-out ${
