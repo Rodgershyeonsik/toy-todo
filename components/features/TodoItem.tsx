@@ -46,7 +46,7 @@ export default function TodoItem({ todo }: TodoItemProps) {
           onBlur={() => handleSaveTodo(editingText)}
           onKeyDown={(e) => e.key === "Enter" && handleSaveTodo(editingText)}
           autoFocus
-          className="text-lg border px-1"
+          className="w-full text-lg border px-1"
         />
       ) : (
         <div className="group flex justify-between w-full">
