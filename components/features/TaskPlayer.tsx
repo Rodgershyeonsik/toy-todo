@@ -1,13 +1,15 @@
 import { TimerStep } from "@/types/timer";
 import { Todo } from "@/types/todo";
-import { ChevronDown, Pause, Play, Square } from "lucide-react";
-import { formatTime, formatTimeToEn } from "@/utils";
+import { ChevronDown, Clock, Pause, Play, Square, Timer } from "lucide-react";
+import { cn, formatTime, formatTimeToEn } from "@/utils";
 import { flexBetweenCn, flexCenterCn } from "@/constants/styles";
 import { useRef, useState } from "react";
 import useTodoStore from "@/store/useTodoStore";
 import { useTodoMutation } from "@/hooks/useTodoMutation";
 
-const taskPlayerButtonStyle = `${flexCenterCn} w-12 h-12 border-2 border-white rounded-full hover:bg-white/10 transition-colors`;
+const playButtonStyle = `${flexCenterCn} w-12 h-12 border-2 border-white rounded-full hover:bg-white/10 transition-colors`;
+const playerToggleStyle =
+  "py-1.5 px-3 border-gray-600 border rounded-md bg-gray-800 hover:bg-white/10";
 
 export default function TaskPlayer() {
   const { updateTodos } = useTodoMutation();
@@ -111,11 +113,11 @@ const IdlePlayer = ({
           className="absolute right-2 ml-1.5 pointer-events-none"
         />
       </div>
-      <button
-        className={`${taskPlayerButtonStyle} shrink-0 ml-1.5`}
-        onClick={() => onPlayTimer(runningTodo?.id ?? "")}
-      >
-        <Play className="fill-white stroke-none" />
+      <button className={cn(playerToggleStyle)} onClick={() => {}}>
+        <Timer size={30} />
+      </button>
+      <button className={cn(playerToggleStyle)} onClick={() => {}}>
+        <Clock size={30} />
       </button>
     </div>
   );
@@ -154,14 +156,14 @@ const ActivePlayer = ({
       </div>
       <div className="flex gap-1.5">
         <button
-          className={taskPlayerButtonStyle}
+          className={playButtonStyle}
           onClick={() => onStopTimer(runningTodo?.id)}
         >
           <Square className="fill-white stroke-none" />
         </button>
 
         <button
-          className={taskPlayerButtonStyle}
+          className={playButtonStyle}
           onClick={
             timerStatus === "PAUSED"
               ? () => onPlayTimer(runningTodo?.id)
