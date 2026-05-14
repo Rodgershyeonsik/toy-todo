@@ -1,6 +1,13 @@
-import { TimerStep } from "@/types/timer";
+import { PlayerMode, PlayerStep } from "@/types/player";
 import { Todo } from "@/types/todo";
-import { ChevronDown, Clock, Pause, Play, Square, Timer } from "lucide-react";
+import {
+  ChevronDown,
+  Hourglass,
+  Pause,
+  Play,
+  Square,
+  Timer,
+} from "lucide-react";
 import { cn, formatTime, formatTimeToEn } from "@/utils";
 import { flexBetweenCn, flexCenterCn } from "@/constants/styles";
 import { useRef, useState } from "react";
@@ -15,13 +22,14 @@ export default function TaskPlayer() {
   const { updateTodos } = useTodoMutation();
   const todos = useTodoStore((state) => state.todos);
   const { incrementTime, updateTodo } = useTodoStore();
-  const [timerStatus, setTimerStatus] = useState<TimerStep>("IDLE");
+  const [playerStatus, setPlayerStatus] = useState<PlayerStep>("IDLE");
+  const [mode, setMode] = useState<PlayerMode>("STOPWATCH");
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const startTimer = (id?: string) => {
     if (!id) return;
     if (timerRef.current) clearInterval(timerRef.current);
-    setTimerStatus("RUNNING");
+    setPlayerStatus("RUNNING");
 
     timerRef.current = setInterval(() => incrementTime(id), 1000);
   };
@@ -33,7 +41,7 @@ export default function TaskPlayer() {
     updateTodo(id, { isRunning: false });
     const latestTodos = useTodoStore.getState().todos;
     updateTodos(latestTodos);
-    setTimerStatus("IDLE");
+    setPlayerStatus("IDLE");
   };
 
   const pauseTimer = () => {
@@ -43,7 +51,7 @@ export default function TaskPlayer() {
       updateTodos(latestTodos);
     }
     timerRef.current = null;
-    setTimerStatus("PAUSED");
+    setPlayerStatus("PAUSED");
   };
 
   const selectTodo = (id: string) => {
@@ -55,23 +63,43 @@ export default function TaskPlayer() {
     updateTodo(id, { elapsedTime: 0 });
   };
 
+  const handlePlayerMode = (mode: PlayerMode) => {
+    if (runningTodo) {
+      setPlayerStatus("READY");
+      setMode(mode);
+    } else {
+      window.confirm("할 일을 선택해주세요!");
+    }
+  };
+
   const runningTodo = todos.find((todo) => todo.isRunning);
+  const isPlaying = playerStatus !== "IDLE";
 
   return (
     <div
       className={`${flexBetweenCn} my-2 bg-gray-700 text-white rounded-sm min-h-20 px-4 py-2`}
     >
-      {timerStatus === "IDLE" ? (
+      {playerStatus === "IDLE" && (
         <IdlePlayer
           todos={todos}
-          runningTodo={runningTodo}
           onSelectTodo={selectTodo}
-          onPlayTimer={startTimer}
+          onSelectMode={handlePlayerMode}
         />
-      ) : (
-        <ActivePlayer
+      )}
+      {isPlaying && mode === "TIMER" && (
+        <TimerPlayer
           runningTodo={runningTodo}
-          timerStatus={timerStatus}
+          timerStatus={playerStatus}
+          onPlayTimer={startTimer}
+          onStopTimer={stopTimer}
+          onPauseTimer={pauseTimer}
+          onResetElapsedTime={resetElapsedTime}
+        />
+      )}
+      {isPlaying && mode === "STOPWATCH" && (
+        <StopwatchPlayer
+          runningTodo={runningTodo}
+          timerStatus={playerStatus}
           onPlayTimer={startTimer}
           onStopTimer={stopTimer}
           onPauseTimer={pauseTimer}
@@ -84,14 +112,12 @@ export default function TaskPlayer() {
 
 const IdlePlayer = ({
   todos,
-  runningTodo,
   onSelectTodo,
-  onPlayTimer,
+  onSelectMode,
 }: {
   todos: Todo[];
-  runningTodo?: Todo;
   onSelectTodo: (value: string) => void;
-  onPlayTimer: (id: string) => void;
+  onSelectMode: (mode: PlayerMode) => void;
 }) => {
   return (
     <div className={`${flexBetweenCn} w-full`}>
@@ -113,17 +139,23 @@ const IdlePlayer = ({
           className="absolute right-2 ml-1.5 pointer-events-none"
         />
       </div>
-      <button className={cn(playerToggleStyle)} onClick={() => {}}>
-        <Timer size={30} />
+      <button
+        className={cn(playerToggleStyle)}
+        onClick={() => onSelectMode("TIMER")}
+      >
+        <Hourglass size={30} />
       </button>
-      <button className={cn(playerToggleStyle)} onClick={() => {}}>
-        <Clock size={30} />
+      <button
+        className={cn(playerToggleStyle)}
+        onClick={() => onSelectMode("STOPWATCH")}
+      >
+        <Timer size={30} />
       </button>
     </div>
   );
 };
 
-const ActivePlayer = ({
+const StopwatchPlayer = ({
   runningTodo,
   timerStatus,
   onPlayTimer,
@@ -132,7 +164,66 @@ const ActivePlayer = ({
   onResetElapsedTime,
 }: {
   runningTodo?: Todo;
-  timerStatus: TimerStep;
+  timerStatus: PlayerStep;
+  onPlayTimer: (id?: string) => void;
+  onStopTimer: (id?: string) => void;
+  onPauseTimer: () => void;
+  onResetElapsedTime: (id?: string) => void;
+}) => {
+  return (
+    <>
+      <div className="flex flex-col">
+        <span className="text-lg font-bold">{runningTodo?.task}</span>
+        <div className="flex gap-3 items-center">
+          <span className="text-2xl font-bold font-mono">
+            {formatTime(runningTodo?.elapsedTime ?? 0)}
+          </span>
+          <button
+            className="bg-white/10 hover:bg-white/20 rounded-sm border border-gray-500 text-gray-50 text-sm font-semibold font-mono h-6 w-14"
+            onClick={() => onResetElapsedTime(runningTodo?.id)}
+          >
+            Reset
+          </button>
+        </div>
+      </div>
+      <div className="flex gap-1.5">
+        <button
+          className={playButtonStyle}
+          onClick={() => onStopTimer(runningTodo?.id)}
+        >
+          <Square className="fill-white stroke-none" />
+        </button>
+
+        <button
+          className={playButtonStyle}
+          onClick={
+            timerStatus === "PAUSED"
+              ? () => onPlayTimer(runningTodo?.id)
+              : onPauseTimer
+          }
+        >
+          {timerStatus === "PAUSED" || timerStatus === "READY" ? (
+            <Play className="fill-white stroke-none" />
+          ) : (
+            <Pause className="fill-white stroke-none" />
+          )}
+        </button>
+      </div>
+    </>
+  );
+};
+
+// 임시로 stopwatch 복붙. 실제 구현 필요
+const TimerPlayer = ({
+  runningTodo,
+  timerStatus,
+  onPlayTimer,
+  onStopTimer,
+  onPauseTimer,
+  onResetElapsedTime,
+}: {
+  runningTodo?: Todo;
+  timerStatus: PlayerStep;
   onPlayTimer: (id?: string) => void;
   onStopTimer: (id?: string) => void;
   onPauseTimer: () => void;
