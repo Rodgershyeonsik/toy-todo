@@ -24,9 +24,10 @@ export default function TaskPlayer() {
   const { incrementTime, updateTodo } = useTodoStore();
   const [playerStatus, setPlayerStatus] = useState<PlayerStep>("IDLE");
   const [mode, setMode] = useState<PlayerMode>("STOPWATCH");
+  const [duration, setDuration] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const startTimer = (id?: string) => {
+  const startStopwatch = (id?: string) => {
     if (!id) return;
     if (timerRef.current) clearInterval(timerRef.current);
     setPlayerStatus("RUNNING");
@@ -34,7 +35,7 @@ export default function TaskPlayer() {
     timerRef.current = setInterval(() => incrementTime(id), 1000);
   };
 
-  const stopTimer = (id?: string) => {
+  const stopStopwatch = (id?: string) => {
     if (!id) return;
     if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = null;
@@ -44,7 +45,7 @@ export default function TaskPlayer() {
     setPlayerStatus("IDLE");
   };
 
-  const pauseTimer = () => {
+  const pauseStopwatch = () => {
     if (timerRef.current) {
       clearInterval(timerRef.current);
       const latestTodos = useTodoStore.getState().todos;
@@ -53,6 +54,16 @@ export default function TaskPlayer() {
     timerRef.current = null;
     setPlayerStatus("PAUSED");
   };
+
+  const handlePresetClick = () => {};
+
+  const handleTimeInput = () => {};
+
+  const startCountdown = (id?: string) => {};
+
+  const stopTimer = (id?: string) => {};
+
+  const pauseTimer = () => {};
 
   const selectTodo = (id: string) => {
     updateTodo(id, { isRunning: true });
@@ -90,9 +101,11 @@ export default function TaskPlayer() {
         <TimerPlayer
           runningTodo={runningTodo}
           timerStatus={playerStatus}
-          onPlayTimer={startTimer}
-          onStopTimer={stopTimer}
-          onPauseTimer={pauseTimer}
+          onStartCountdown={startCountdown}
+          onStopTimer={stopStopwatch}
+          onPauseTimer={pauseStopwatch}
+          onPresetClick={handlePresetClick}
+          onEnterTimeInput={handleTimeInput}
           onResetElapsedTime={resetElapsedTime}
         />
       )}
@@ -100,9 +113,9 @@ export default function TaskPlayer() {
         <StopwatchPlayer
           runningTodo={runningTodo}
           timerStatus={playerStatus}
-          onPlayTimer={startTimer}
-          onStopTimer={stopTimer}
-          onPauseTimer={pauseTimer}
+          onPlayTimer={startStopwatch}
+          onStopTimer={stopStopwatch}
+          onPauseTimer={pauseStopwatch}
           onResetElapsedTime={resetElapsedTime}
         />
       )}
@@ -213,20 +226,23 @@ const StopwatchPlayer = ({
   );
 };
 
-// 임시로 stopwatch 복붙. 실제 구현 필요
 const TimerPlayer = ({
   runningTodo,
   timerStatus,
-  onPlayTimer,
+  onStartCountdown,
   onStopTimer,
   onPauseTimer,
+  onPresetClick,
+  onEnterTimeInput,
   onResetElapsedTime,
 }: {
   runningTodo?: Todo;
   timerStatus: PlayerStep;
-  onPlayTimer: (id?: string) => void;
+  onStartCountdown: (id?: string) => void;
   onStopTimer: (id?: string) => void;
   onPauseTimer: () => void;
+  onPresetClick: () => void;
+  onEnterTimeInput: () => void;
   onResetElapsedTime: (id?: string) => void;
 }) => {
   return (
@@ -257,7 +273,7 @@ const TimerPlayer = ({
           className={playButtonStyle}
           onClick={
             timerStatus === "PAUSED"
-              ? () => onPlayTimer(runningTodo?.id)
+              ? () => onStartCountdown(runningTodo?.id)
               : onPauseTimer
           }
         >
