@@ -7,12 +7,14 @@ import {
   Play,
   Square,
   Timer,
+  TimerReset,
 } from "lucide-react";
-import { cn, formatTime, formatTimeToEn } from "@/utils";
-import { flexBetweenCn, flexCenterCn } from "@/constants/styles";
+import { cn, formatTime, formatTimeToEn, parseMinutes } from "@/utils";
+import { basicButtonCn, flexBetweenCn, flexCenterCn } from "@/constants/styles";
 import { useRef, useState } from "react";
 import useTodoStore from "@/store/useTodoStore";
 import { useTodoMutation } from "@/hooks/useTodoMutation";
+import { useModalStore } from "@/store/useModalStore";
 
 const playButtonStyle = `${flexCenterCn} w-12 h-12 border-2 border-white rounded-full hover:bg-white/10 transition-colors`;
 const playerToggleStyle =
@@ -54,8 +56,6 @@ export default function TaskPlayer() {
     timerRef.current = null;
     setPlayerStatus("PAUSED");
   };
-
-  const handlePresetClick = () => {};
 
   const handleTimeInput = () => {};
 
@@ -100,13 +100,12 @@ export default function TaskPlayer() {
       {isPlaying && mode === "TIMER" && (
         <TimerPlayer
           runningTodo={runningTodo}
+          duration={duration}
           timerStatus={playerStatus}
           onStartCountdown={startCountdown}
           onStopTimer={stopStopwatch}
           onPauseTimer={pauseStopwatch}
-          onPresetClick={handlePresetClick}
-          onEnterTimeInput={handleTimeInput}
-          onResetElapsedTime={resetElapsedTime}
+          onSaveDuration={setDuration}
         />
       )}
       {isPlaying && mode === "STOPWATCH" && (
@@ -228,37 +227,36 @@ const StopwatchPlayer = ({
 
 const TimerPlayer = ({
   runningTodo,
+  duration,
   timerStatus,
   onStartCountdown,
   onStopTimer,
   onPauseTimer,
-  onPresetClick,
-  onEnterTimeInput,
-  onResetElapsedTime,
+  onSaveDuration,
 }: {
   runningTodo?: Todo;
+  duration: number;
   timerStatus: PlayerStep;
   onStartCountdown: (id?: string) => void;
   onStopTimer: (id?: string) => void;
   onPauseTimer: () => void;
-  onPresetClick: () => void;
-  onEnterTimeInput: () => void;
-  onResetElapsedTime: (id?: string) => void;
+  onSaveDuration: (seconds: number) => void;
 }) => {
+  const { openModal } = useModalStore();
+
   return (
     <>
       <div className="flex flex-col">
         <span className="text-lg font-bold">{runningTodo?.task}</span>
         <div className="flex gap-3 items-center">
-          <span className="text-2xl font-bold font-mono">
-            {formatTime(runningTodo?.elapsedTime ?? 0)}
-          </span>
-          <button
-            className="bg-white/10 hover:bg-white/20 rounded-sm border border-gray-500 text-gray-50 text-sm font-semibold font-mono h-6 w-14"
-            onClick={() => onResetElapsedTime(runningTodo?.id)}
+          <span
+            className="text-2xl font-bold font-mono"
+            onClick={() =>
+              openModal(<TimerSetModal onSaveDuration={onSaveDuration} />)
+            }
           >
-            Reset
-          </button>
+            {formatTime(duration)}
+          </span>
         </div>
       </div>
       <div className="flex gap-1.5">
@@ -277,7 +275,7 @@ const TimerPlayer = ({
               : onPauseTimer
           }
         >
-          {timerStatus === "PAUSED" ? (
+          {timerStatus === "PAUSED" || timerStatus === "READY" ? (
             <Play className="fill-white stroke-none" />
           ) : (
             <Pause className="fill-white stroke-none" />
@@ -285,5 +283,86 @@ const TimerPlayer = ({
         </button>
       </div>
     </>
+  );
+};
+
+const TimerSetModal = ({
+  onSaveDuration,
+}: {
+  onSaveDuration: (minute: number) => void;
+}) => {
+  const [localDuration, setLocalDuration] = useState(0);
+  const [h, setH] = useState("0");
+  const [m, setM] = useState("0");
+  const [nowEdit, setNowEdit] = useState<null | "h" | "m">(null);
+
+  const getHText = () => {
+    const h = parseMinutes(localDuration).h;
+    if (h === 0) return "00";
+    return h + "";
+  };
+
+  const getMText = () => {
+    const m = parseMinutes(localDuration).m;
+    if (m === 0) return "00";
+    return m + "";
+  };
+
+  const handlePresetClick = (minutes: number) => {};
+
+  const presetValue = [5, 10, 30];
+
+  return (
+    <div className={cn(flexCenterCn, "min-w-2", "flex-col", "py-2.5")}>
+      {/* <div className="flex gap-1">
+        {nowEdit === "h" ? (
+          <input
+            value={h}
+            onChange={(e) => setH(e.target.value)}
+            onBlur={() => onEnterTimeInput()}
+            type="number"
+          />
+        ) : (
+          <span onClick={() => setNowEdit("h")}>{getHText()}</span>
+        )}
+        <span>:</span>
+        {nowEdit === "m" ? (
+          <input value={m} onChange={(e) => setM(e.target.value)} />
+        ) : (
+          <span onClick={() => setNowEdit("m")}>{getMText()}</span>
+        )}
+      </div> */}
+      <span className="text-2xl font-bold font-mono">
+        {getHText()}:{getMText()}
+      </span>
+      <div className="flex gap-1 py-3">
+        <div
+          className={cn(
+            basicButtonCn,
+            "w-15",
+            "py-1",
+            "bg-gray-700 border-gray-600",
+            "text-white"
+          )}
+        >
+          <TimerReset size={20} onClick={() => {}} />
+        </div>
+        {presetValue.map((item) => (
+          <div
+            key={item}
+            className={cn(
+              basicButtonCn,
+              "p-0",
+              "w-15",
+              "bg-gray-700 border-gray-600",
+              "text-white"
+            )}
+            onClick={() => handlePresetClick(item)}
+          >
+            {`+${item}`}
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };

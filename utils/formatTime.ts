@@ -6,7 +6,7 @@ const parseSeconds = (seconds: number) => {
   return { h: h, m: m, s: s };
 };
 
-const parseMinutes = (minutes: number) => {
+export const parseMinutes = (minutes: number) => {
   const h = Math.floor(minutes / 60);
   const m = minutes % 60;
 
