@@ -9,9 +9,15 @@ import {
   Timer,
   TimerReset,
 } from "lucide-react";
-import { cn, formatTime, formatTimeToEn, parseMinutes } from "@/utils";
+import {
+  cn,
+  formatTime,
+  formatTimeToEn,
+  parseMinutes,
+  playBeep,
+} from "@/utils";
 import { basicButtonCn, flexBetweenCn, flexCenterCn } from "@/constants/styles";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useTodoStore from "@/store/useTodoStore";
 import { useTodoMutation } from "@/hooks/useTodoMutation";
 import { useModalStore } from "@/store/useModalStore";
@@ -28,6 +34,7 @@ export default function TaskPlayer() {
   const [mode, setMode] = useState<PlayerMode>("STOPWATCH");
   const [duration, setDuration] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const elapsedRef = useRef(0);
 
   const startStopwatch = (id?: string) => {
     if (!id) return;
@@ -57,9 +64,15 @@ export default function TaskPlayer() {
     setPlayerStatus("PAUSED");
   };
 
-  const handleTimeInput = () => {};
+  const startCountdown = () => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    setPlayerStatus("RUNNING");
 
-  const startCountdown = (id?: string) => {};
+    timerRef.current = setInterval(() => {
+      setDuration((prev) => prev - 1);
+      elapsedRef.current += 1;
+    }, 1000);
+  };
 
   const stopTimer = (id?: string) => {};
 
@@ -82,6 +95,22 @@ export default function TaskPlayer() {
       window.confirm("할 일을 선택해주세요!");
     }
   };
+
+  useEffect(() => {
+    if (duration === 0 && playerStatus === "RUNNING") {
+      if (timerRef.current) clearInterval(timerRef.current);
+      timerRef.current = null;
+      updateTodos(
+        todos.map((t) =>
+          t.id === runningTodo?.id
+            ? { ...t, elapsedTime: t.elapsedTime + elapsedRef.current }
+            : t
+        )
+      );
+      setPlayerStatus("READY");
+      playBeep();
+    }
+  }, [duration]);
 
   const runningTodo = todos.find((todo) => todo.isRunning);
   const isPlaying = playerStatus !== "IDLE";
