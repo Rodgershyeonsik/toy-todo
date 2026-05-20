@@ -29,7 +29,7 @@ const playerToggleStyle =
 export default function TaskPlayer() {
   const { updateTodos } = useTodoMutation();
   const todos = useTodoStore((state) => state.todos);
-  const { incrementTime, patchTodo: updateTodo } = useTodoStore();
+  const { incrementTime, patchTodo } = useTodoStore();
   const [playerStatus, setPlayerStatus] = useState<PlayerStep>("IDLE");
   const [mode, setMode] = useState<PlayerMode>("STOPWATCH");
   const [duration, setDuration] = useState(0);
@@ -48,7 +48,7 @@ export default function TaskPlayer() {
     if (!id) return;
     if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = null;
-    updateTodo(id, { isRunning: false });
+    patchTodo(id, { isRunning: false });
     const latestTodos = useTodoStore.getState().todos;
     updateTodos(latestTodos);
     setPlayerStatus("IDLE");
@@ -74,17 +74,31 @@ export default function TaskPlayer() {
     }, 1000);
   };
 
-  const stopTimer = (id?: string) => {};
+  const stopTimer = (runningTodo?: Todo) => {};
 
-  const pauseTimer = () => {};
+  const pauseTimer = (runningTodo?: Todo) => {
+    if (!runningTodo) return;
+
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      patchTodo(runningTodo.id, {
+        elapsedTime: runningTodo.elapsedTime + elapsedRef.current,
+      });
+      elapsedRef.current = 0;
+      const latestTodos = useTodoStore.getState().todos;
+      updateTodos(latestTodos);
+    }
+    timerRef.current = null;
+    setPlayerStatus("PAUSED");
+  };
 
   const selectTodo = (id: string) => {
-    updateTodo(id, { isRunning: true });
+    patchTodo(id, { isRunning: true });
   };
 
   const resetElapsedTime = (id?: string) => {
     if (!id) return;
-    updateTodo(id, { elapsedTime: 0 });
+    patchTodo(id, { elapsedTime: 0 });
   };
 
   const handlePlayerMode = (mode: PlayerMode) => {
@@ -100,13 +114,14 @@ export default function TaskPlayer() {
     if (duration === 0 && playerStatus === "RUNNING") {
       if (timerRef.current) clearInterval(timerRef.current);
       timerRef.current = null;
-      updateTodos(
-        todos.map((t) =>
-          t.id === runningTodo?.id
-            ? { ...t, elapsedTime: t.elapsedTime + elapsedRef.current }
-            : t
-        )
-      );
+      if (runningTodo) {
+        patchTodo(runningTodo.id, {
+          elapsedTime: runningTodo.elapsedTime + elapsedRef.current,
+        });
+      }
+
+      const latestTodos = useTodoStore.getState().todos;
+      updateTodos(latestTodos);
       setPlayerStatus("READY");
       playBeep();
     }
@@ -132,8 +147,8 @@ export default function TaskPlayer() {
           duration={duration}
           timerStatus={playerStatus}
           onStartCountdown={startCountdown}
-          onStopTimer={stopStopwatch}
-          onPauseTimer={pauseStopwatch}
+          onStopTimer={stopTimer}
+          onPauseTimer={pauseTimer}
           onSaveDuration={setDuration}
         />
       )}
@@ -266,9 +281,9 @@ const TimerPlayer = ({
   runningTodo?: Todo;
   duration: number;
   timerStatus: PlayerStep;
-  onStartCountdown: (id?: string) => void;
-  onStopTimer: (id?: string) => void;
-  onPauseTimer: () => void;
+  onStartCountdown: () => void;
+  onStopTimer: (runningTodo?: Todo) => void;
+  onPauseTimer: (runningTodo?: Todo) => void;
   onSaveDuration: (seconds: number) => void;
 }) => {
   const { openModal } = useModalStore();
@@ -296,7 +311,7 @@ const TimerPlayer = ({
       <div className="flex gap-1.5">
         <button
           className={playButtonStyle}
-          onClick={() => onStopTimer(runningTodo?.id)}
+          onClick={() => onStopTimer(runningTodo)}
         >
           <Square className="fill-white stroke-none" />
         </button>
@@ -305,8 +320,8 @@ const TimerPlayer = ({
           className={playButtonStyle}
           onClick={
             timerStatus === "PAUSED"
-              ? () => onStartCountdown(runningTodo?.id)
-              : onPauseTimer
+              ? onStartCountdown
+              : () => onPauseTimer(runningTodo)
           }
         >
           {timerStatus === "PAUSED" || timerStatus === "READY" ? (
