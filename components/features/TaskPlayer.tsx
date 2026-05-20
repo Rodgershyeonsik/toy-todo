@@ -29,7 +29,7 @@ const playerToggleStyle =
 export default function TaskPlayer() {
   const { updateTodos } = useTodoMutation();
   const todos = useTodoStore((state) => state.todos);
-  const { incrementTime, updateTodo } = useTodoStore();
+  const { incrementTime, patchTodo: updateTodo } = useTodoStore();
   const [playerStatus, setPlayerStatus] = useState<PlayerStep>("IDLE");
   const [mode, setMode] = useState<PlayerMode>("STOPWATCH");
   const [duration, setDuration] = useState(0);

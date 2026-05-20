@@ -16,7 +16,7 @@ const labelCn = "text-lg font-mono font-bold";
 
 export default function TodoEditor({ todo }: TodoEditorProps) {
   const { updateTodos } = useTodoMutation();
-  const { updateTodo, addTodo } = useTodoStore();
+  const { patchTodo: updateTodo, addTodo } = useTodoStore();
   const { openModal, closeModal } = useModalStore();
   const [formData, setFormData] = useState<TodoFormData>({
     task: todo ? todo.task : "",
