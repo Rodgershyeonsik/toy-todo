@@ -74,7 +74,20 @@ export default function TaskPlayer() {
     }, 1000);
   };
 
-  const stopTimer = (runningTodo?: Todo) => {};
+  const stopTimer = (runningTodo?: Todo) => {
+    if (!runningTodo) return;
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = null;
+    patchTodo(runningTodo.id, {
+      isRunning: false,
+      elapsedTime: runningTodo.elapsedTime + elapsedRef.current,
+    });
+    elapsedRef.current = 0;
+    setDuration(0);
+    const latestTodos = useTodoStore.getState().todos;
+    updateTodos(latestTodos);
+    setPlayerStatus("IDLE");
+  };
 
   const pauseTimer = (runningTodo?: Todo) => {
     if (!runningTodo) return;
