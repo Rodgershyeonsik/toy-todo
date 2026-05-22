@@ -1,0 +1,143 @@
+import { useTodoMutation } from "@/hooks/useTodoMutation";
+import useTodoStore from "@/store/useTodoStore";
+import { PlayerMode, PlayerStep } from "@/types/player";
+import { Todo } from "@/types/todo";
+import { playBeep } from "@/utils";
+import { useEffect, useRef, useState } from "react";
+
+export function usePlayerLogic() {
+  const { updateTodos } = useTodoMutation();
+  const todos = useTodoStore((state) => state.todos);
+  const { incrementTime, patchTodo } = useTodoStore();
+  const [playerStatus, setPlayerStatus] = useState<PlayerStep>("IDLE");
+  const [mode, setMode] = useState<PlayerMode>("STOPWATCH");
+  const [duration, setDuration] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const elapsedRef = useRef(0);
+
+  const startStopwatch = (id?: string) => {
+    if (!id) return;
+    if (timerRef.current) clearInterval(timerRef.current);
+    setPlayerStatus("RUNNING");
+
+    timerRef.current = setInterval(() => incrementTime(id), 1000);
+  };
+
+  const stopStopwatch = (id?: string) => {
+    if (!id) return;
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = null;
+    patchTodo(id, { isRunning: false });
+    const latestTodos = useTodoStore.getState().todos;
+    updateTodos(latestTodos);
+    setPlayerStatus("IDLE");
+  };
+
+  const pauseStopwatch = () => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      const latestTodos = useTodoStore.getState().todos;
+      updateTodos(latestTodos);
+    }
+    timerRef.current = null;
+    setPlayerStatus("PAUSED");
+  };
+
+  const startCountdown = () => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    setPlayerStatus("RUNNING");
+
+    timerRef.current = setInterval(() => {
+      setDuration((prev) => prev - 1);
+      elapsedRef.current += 1;
+    }, 1000);
+  };
+
+  const stopTimer = (runningTodo?: Todo) => {
+    if (!runningTodo) return;
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = null;
+    patchTodo(runningTodo.id, {
+      isRunning: false,
+      elapsedTime: runningTodo.elapsedTime + elapsedRef.current,
+    });
+    elapsedRef.current = 0;
+    setDuration(0);
+    const latestTodos = useTodoStore.getState().todos;
+    updateTodos(latestTodos);
+    setPlayerStatus("IDLE");
+  };
+
+  const pauseTimer = (runningTodo?: Todo) => {
+    if (!runningTodo) return;
+
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      patchTodo(runningTodo.id, {
+        elapsedTime: runningTodo.elapsedTime + elapsedRef.current,
+      });
+      elapsedRef.current = 0;
+      const latestTodos = useTodoStore.getState().todos;
+      updateTodos(latestTodos);
+    }
+    timerRef.current = null;
+    setPlayerStatus("PAUSED");
+  };
+
+  const selectTodo = (id: string) => {
+    patchTodo(id, { isRunning: true });
+  };
+
+  const resetElapsedTime = (id?: string) => {
+    if (!id) return;
+    patchTodo(id, { elapsedTime: 0 });
+  };
+
+  const handlePlayerMode = (mode: PlayerMode) => {
+    if (runningTodo) {
+      setPlayerStatus("READY");
+      setMode(mode);
+    } else {
+      window.confirm("할 일을 선택해주세요!");
+    }
+  };
+
+  useEffect(() => {
+    if (duration === 0 && playerStatus === "RUNNING") {
+      if (timerRef.current) clearInterval(timerRef.current);
+      timerRef.current = null;
+      if (runningTodo) {
+        patchTodo(runningTodo.id, {
+          elapsedTime: runningTodo.elapsedTime + elapsedRef.current,
+        });
+      }
+
+      const latestTodos = useTodoStore.getState().todos;
+      updateTodos(latestTodos);
+      setPlayerStatus("READY");
+      playBeep();
+    }
+  }, [duration]);
+
+  const runningTodo = todos.find((todo) => todo.isRunning);
+  const isPlaying = playerStatus !== "IDLE";
+
+  return {
+    todos,
+    mode,
+    isPlaying,
+    selectTodo,
+    handlePlayerMode,
+    runningTodo,
+    duration,
+    playerStatus,
+    startCountdown,
+    stopTimer,
+    pauseTimer,
+    setDuration,
+    startStopwatch,
+    stopStopwatch,
+    pauseStopwatch,
+    resetElapsedTime,
+  };
+}
