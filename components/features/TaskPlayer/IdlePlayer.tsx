@@ -3,6 +3,7 @@ import { PlayerMode } from "@/types/player";
 import { Todo } from "@/types/todo";
 import { cn, formatTimeToEn } from "@/utils";
 import { ChevronDown, Hourglass, Timer } from "lucide-react";
+import { playerBasicStyle } from ".";
 
 const playerToggleStyle =
   "py-1.5 px-3 border-gray-600 border rounded-md bg-gray-800 hover:bg-white/10";
@@ -17,7 +18,7 @@ export default function IdlePlayer({
   onSelectMode: (mode: PlayerMode) => void;
 }) {
   return (
-    <div className={`${flexBetweenCn} w-full`}>
+    <div className={cn(playerBasicStyle, "bg-gray-700")}>
       <div className="flex w-full relative max-w-[70%] items-center bg-gray-800 border border-gray-600 outline-none text-sm rounded-md cursor-pointer">
         <select
           className="w-full appearance-none px-2 py-2.5"

@@ -103,7 +103,7 @@ export default function TimerSetModal({
         className={cn(
           basicButtonCn,
           "w-full",
-          " border-blue-400 bg-blue-500",
+          " border-amber-400 bg-amber-500",
           "text-white font-mono"
         )}
       >

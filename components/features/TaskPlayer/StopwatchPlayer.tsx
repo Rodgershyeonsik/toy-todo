@@ -1,8 +1,8 @@
 import { PlayerStep } from "@/types/player";
 import { Todo } from "@/types/todo";
-import { formatTime } from "@/utils";
+import { cn, formatTime } from "@/utils";
 import { Pause, Play, Square } from "lucide-react";
-import { playButtonStyle } from ".";
+import { playButtonStyle, playerBasicStyle } from ".";
 
 export default function StopwatchPlayer({
   runningTodo,
@@ -20,7 +20,7 @@ export default function StopwatchPlayer({
   onResetElapsedTime: (id?: string) => void;
 }) {
   return (
-    <>
+    <div className={cn(playerBasicStyle, "bg-blue-400")}>
       <div className="flex flex-col">
         <span className="text-lg font-bold">{runningTodo?.task}</span>
         <div className="flex gap-3 items-center">
@@ -28,7 +28,7 @@ export default function StopwatchPlayer({
             {formatTime(runningTodo?.elapsedTime ?? 0)}
           </span>
           <button
-            className="bg-white/10 hover:bg-white/20 rounded-sm border border-gray-500 text-gray-50 text-sm font-semibold font-mono h-6 w-14"
+            className="bg-white/10 hover:bg-white/20 rounded-sm border border-blue-200 text-white text-sm font-semibold font-mono h-6 w-14"
             onClick={() => onResetElapsedTime(runningTodo?.id)}
           >
             Reset
@@ -58,6 +58,6 @@ export default function StopwatchPlayer({
           )}
         </button>
       </div>
-    </>
+    </div>
   );
 }

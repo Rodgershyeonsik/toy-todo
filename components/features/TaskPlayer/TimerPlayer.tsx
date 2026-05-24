@@ -1,6 +1,6 @@
-import { Pause, Play, Square } from "lucide-react";
-import { playButtonStyle } from ".";
-import { formatTime } from "@/utils";
+import { Pause, Play, Square, SquarePen } from "lucide-react";
+import { playButtonStyle, playerBasicStyle } from ".";
+import { cn, formatTime } from "@/utils";
 import { Todo } from "@/types/todo";
 import { PlayerStep } from "@/types/player";
 import { useModalStore } from "@/store/useModalStore";
@@ -26,12 +26,12 @@ export default function TimerPlayer({
   const { openModal } = useModalStore();
 
   return (
-    <>
+    <div className={cn(playerBasicStyle, "bg-amber-500")}>
       <div className="flex flex-col">
         <span className="text-lg font-bold">{runningTodo?.task}</span>
         <div className="flex gap-3 items-center">
-          <span
-            className="text-2xl font-bold font-mono"
+          <div
+            className="flex gap-2 items-center"
             onClick={() =>
               openModal(
                 <TimerSetModal
@@ -41,8 +41,11 @@ export default function TimerPlayer({
               )
             }
           >
-            {formatTime(duration)}
-          </span>
+            <span className="text-2xl font-bold font-mono">
+              {formatTime(duration)}
+            </span>
+            <SquarePen size={18} />
+          </div>
         </div>
       </div>
       <div className="flex gap-1.5">
@@ -68,6 +71,6 @@ export default function TimerPlayer({
           )}
         </button>
       </div>
-    </>
+    </div>
   );
 }
