@@ -13,9 +13,6 @@ export default function TimerSetModal({
 }) {
   const { closeModal } = useModalStore();
   const [localDuration, setLocalDuration] = useState(duration);
-  const [h, setH] = useState("0");
-  const [m, setM] = useState("0");
-  const [nowEdit, setNowEdit] = useState<null | "h" | "m">(null);
 
   const getHText = () => {
     const h = parseMinutes(localDuration).h;
@@ -44,24 +41,6 @@ export default function TimerSetModal({
         closeModal();
       }}
     >
-      {/* <div className="flex gap-1">
-        {nowEdit === "h" ? (
-          <input
-            value={h}
-            onChange={(e) => setH(e.target.value)}
-            onBlur={() => onEnterTimeInput()}
-            type="number"
-          />
-        ) : (
-          <span onClick={() => setNowEdit("h")}>{getHText()}</span>
-        )}
-        <span>:</span>
-        {nowEdit === "m" ? (
-          <input value={m} onChange={(e) => setM(e.target.value)} />
-        ) : (
-          <span onClick={() => setNowEdit("m")}>{getMText()}</span>
-        )}
-      </div> */}
       <span className="m-5 text-4xl font-bold font-mono">
         {getHText()}:{getMText()}
       </span>
