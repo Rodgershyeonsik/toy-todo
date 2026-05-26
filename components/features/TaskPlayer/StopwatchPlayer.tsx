@@ -16,7 +16,7 @@ export default function StopwatchPlayer({
   timerStatus: PlayerStep;
   onPlayTimer: (id?: string) => void;
   onStopTimer: (id?: string) => void;
-  onPauseTimer: () => void;
+  onPauseTimer: (id?: string) => void;
   onResetElapsedTime: (id?: string) => void;
 }) {
   return (
@@ -48,7 +48,7 @@ export default function StopwatchPlayer({
           onClick={
             timerStatus === "PAUSED"
               ? () => onPlayTimer(runningTodo?.id)
-              : onPauseTimer
+              : () => onPauseTimer(runningTodo?.id)
           }
         >
           {timerStatus === "PAUSED" || timerStatus === "READY" ? (

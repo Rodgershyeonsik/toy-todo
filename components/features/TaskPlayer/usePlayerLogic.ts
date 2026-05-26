@@ -8,34 +8,57 @@ import { useEffect, useRef, useState } from "react";
 export function usePlayerLogic() {
   const { updateTodos } = useTodoMutation();
   const todos = useTodoStore((state) => state.todos);
-  const { incrementTime, patchTodo } = useTodoStore();
+  const { patchTodo } = useTodoStore();
   const [playerStatus, setPlayerStatus] = useState<PlayerStep>("IDLE");
   const [mode, setMode] = useState<PlayerMode>("STOPWATCH");
   const [duration, setDuration] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const elapsedRef = useRef(0);
+  const startTimeRef = useRef<number | null>(null);
+  const baseElapsedRef = useRef(0);
 
   const startStopwatch = (id?: string) => {
     if (!id) return;
     if (timerRef.current) clearInterval(timerRef.current);
     setPlayerStatus("RUNNING");
 
-    timerRef.current = setInterval(() => incrementTime(id), 1000);
+    const baseElapsed =
+      useTodoStore.getState().todos.find((t) => t.id === id)?.elapsedTime ?? 0;
+    baseElapsedRef.current = baseElapsed;
+    startTimeRef.current = Date.now();
+
+    timerRef.current = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - startTimeRef.current!) / 1000);
+      patchTodo(id, { elapsedTime: baseElapsed + elapsed });
+    }, 1000);
   };
 
   const stopStopwatch = (id?: string) => {
     if (!id) return;
-    if (timerRef.current) clearInterval(timerRef.current);
-    timerRef.current = null;
-    patchTodo(id, { isRunning: false });
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+      const elapsed = Math.floor((Date.now() - startTimeRef.current!) / 1000);
+      patchTodo(id, {
+        isRunning: false,
+        elapsedTime: baseElapsedRef.current + elapsed,
+      });
+    } else {
+      patchTodo(id, { isRunning: false });
+    }
+
     const latestTodos = useTodoStore.getState().todos;
     updateTodos(latestTodos);
     setPlayerStatus("IDLE");
   };
 
-  const pauseStopwatch = () => {
+  const pauseStopwatch = (id?: string) => {
+    if (!id) return;
+
     if (timerRef.current) {
       clearInterval(timerRef.current);
+      const elapsed = Math.floor((Date.now() - startTimeRef.current!) / 1000);
+      patchTodo(id, { elapsedTime: baseElapsedRef.current + elapsed });
       const latestTodos = useTodoStore.getState().todos;
       updateTodos(latestTodos);
     }
