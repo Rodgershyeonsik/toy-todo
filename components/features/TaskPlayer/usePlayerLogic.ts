@@ -16,6 +16,21 @@ export function usePlayerLogic() {
   const elapsedRef = useRef(0);
   const startTimeRef = useRef<number | null>(null);
   const baseElapsedRef = useRef(0);
+  const initialDurationRef = useRef(0);
+  const notifTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const scheduleAlarm = (remainingSeconds: number) => {
+    if (notifTimeoutRef.current) clearTimeout(notifTimeoutRef.current);
+    notifTimeoutRef.current = setTimeout(() => {
+      if (document.visibilityState === "visible") return;
+      playBeep();
+      if (Notification.permission === "granted") {
+        new Notification("타이머 종료!", {
+          body: "설정 시간이 종료되었습니다.",
+        });
+      }
+    }, remainingSeconds * 1000);
+  };
 
   const startStopwatch = (id?: string) => {
     if (!id) return;
@@ -69,22 +84,34 @@ export function usePlayerLogic() {
   const startCountdown = () => {
     if (timerRef.current) clearInterval(timerRef.current);
     setPlayerStatus("RUNNING");
-
+    initialDurationRef.current = duration;
+    startTimeRef.current = Date.now();
     timerRef.current = setInterval(() => {
-      setDuration((prev) => prev - 1);
-      elapsedRef.current += 1;
+      const elapsed = Math.floor((Date.now() - startTimeRef.current!) / 1000);
+      const diff = initialDurationRef.current - elapsed;
+      setDuration(diff > 0 ? diff : 0);
+      elapsedRef.current = elapsed;
     }, 1000);
+    scheduleAlarm(duration);
   };
 
   const stopTimer = (runningTodo?: Todo) => {
     if (!runningTodo) return;
-    if (timerRef.current) clearInterval(timerRef.current);
-    timerRef.current = null;
-    patchTodo(runningTodo.id, {
-      isRunning: false,
-      elapsedTime: runningTodo.elapsedTime + elapsedRef.current,
-    });
-    elapsedRef.current = 0;
+    if (notifTimeoutRef.current) clearTimeout(notifTimeoutRef.current);
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+      const elapsed = Math.floor((Date.now() - startTimeRef.current!) / 1000);
+      patchTodo(runningTodo.id, {
+        isRunning: false,
+        elapsedTime: runningTodo.elapsedTime + elapsed,
+      });
+      elapsedRef.current = 0;
+    } else {
+      patchTodo(runningTodo.id, {
+        isRunning: false,
+      });
+    }
     setDuration(0);
     const latestTodos = useTodoStore.getState().todos;
     updateTodos(latestTodos);
@@ -93,12 +120,15 @@ export function usePlayerLogic() {
 
   const pauseTimer = (runningTodo?: Todo) => {
     if (!runningTodo) return;
+    if (notifTimeoutRef.current) clearTimeout(notifTimeoutRef.current);
 
     if (timerRef.current) {
       clearInterval(timerRef.current);
+      const elapsed = Math.floor((Date.now() - startTimeRef.current!) / 1000);
       patchTodo(runningTodo.id, {
-        elapsedTime: runningTodo.elapsedTime + elapsedRef.current,
+        elapsedTime: runningTodo.elapsedTime + elapsed,
       });
+      setDuration(Math.max(0, initialDurationRef.current - elapsed));
       elapsedRef.current = 0;
       const latestTodos = useTodoStore.getState().todos;
       updateTodos(latestTodos);
@@ -124,6 +154,12 @@ export function usePlayerLogic() {
       window.confirm("할 일을 선택해주세요!");
     }
   };
+
+  useEffect(() => {
+    if (Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+  }, []);
 
   useEffect(() => {
     if (duration === 0 && playerStatus === "RUNNING") {
