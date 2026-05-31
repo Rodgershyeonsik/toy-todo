@@ -1,6 +1,7 @@
 # Focusdo — 작업 시간 트래킹 생산성 툴
 
-> React 학습을 목적으로 시작해, 할 일별 소요 시간을 기록하고 분석하는 생산성 관리 툴로 발전시키고 있는 프로젝트입니다.
+> 무언가를 준비하는 상태로 지내고 있을 때, 할 일에 실제로 얼마나 시간을 쓰는지 기록하고 돌아볼 수 있는 툴이 있으면 좋겠다는 생각에서 시작한 프로젝트입니다.
+> React 학습을 목적으로 시작했지만, 직접 실사용하며 기능을 발전시키고 있습니다.
 
 **배포 링크**: https://toy-todo-nine.vercel.app/  
 **개발 기간**: 2026.01 ~ 진행 중
@@ -22,14 +23,15 @@
 
 ## 기술 스택
 
-| 분류           | 기술           |
-| -------------- | -------------- |
-| Framework      | Next.js, React |
-| Language       | TypeScript     |
-| Styling        | TailwindCSS    |
-| 상태 관리      | Zustand        |
-| 서버 상태 관리 | TanStack Query |
-| 배포           | Vercel         |
+| 분류           | 기술              |
+| -------------- | ----------------- |
+| Framework      | Next.js, React    |
+| Language       | TypeScript        |
+| Styling        | TailwindCSS       |
+| 상태 관리      | Zustand           |
+| 서버 상태 관리 | TanStack Query    |
+| DB             | Supabase (도입중) |
+| 배포           | Vercel            |
 
 ---
 
