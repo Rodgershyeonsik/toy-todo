@@ -15,8 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "toy todo list",
-  description: "To learn react!!!",
+  title: "Focusdo",
+  description:
+    "Manage your personal productivity efficiently with this React-powered task management tool",
 };
 
 export default function RootLayout({

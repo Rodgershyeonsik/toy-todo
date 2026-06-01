@@ -100,9 +100,9 @@ export default function Home() {
         <header>
           <div className="flex justify-between">
             <div>
-              <h1 className="text-3xl font-bold">TODO LIST</h1>
+              <h1 className="text-3xl font-bold">FOCUS DO!</h1>
               <span className="text-sm text-gray-500">
-                할 일을 정리하고 완료해보십시다리^ㅡ^
+                할 일들의 소요시간을 기록하고 관리해보자
               </span>
             </div>
             <button onClick={() => openModal(<TodoEditor />)}>
