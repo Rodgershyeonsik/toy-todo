@@ -8,12 +8,35 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id        String     @id  // Supabase Auth UUID 그대로 사용
+  email     String     @unique
+  createdAt DateTime   @default(now())
+  todos     Todo[]
+  dailyLogs DailyLog[]
+}
+
 model Todo {
   id           String   @id @default(uuid())
   task         String
   completed    Boolean  @default(false)
-  elapsedTime  Int      @default(0)
   dailyGoalTime Int?
   order        Int      @default(0)
   createdAt    DateTime @default(now())
+  dailyLogs    DailyLog[]
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+}
+
+model DailyLog {
+  id          String   @id @default(uuid())
+  date        DateTime @db.Date
+  elapsedTime Int      @default(0)
+  todoId      String
+  todo        Todo     @relation(fields: [todoId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([todoId, date])  // 하루에 todo당 하나
 }
