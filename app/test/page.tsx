@@ -16,10 +16,23 @@ export default function TestPage() {
     }
   };
 
+  const googleLogin = async () => {
+    const supabase = createClient();
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: "http://localhost:3000/auth/callback" },
+    });
+  };
+
   return (
-    <div>
-      <button onClick={handleTest}>Supabase 연결 테스트</button>
-      {result && <p>{result}</p>}
-    </div>
+    <>
+      <div>
+        <button onClick={handleTest}>Supabase 연결 테스트</button>
+        {result && <p>{result}</p>}
+      </div>
+      <div>
+        <button onClick={googleLogin}>구글 로그인 테스트</button>
+      </div>
+    </>
   );
 }
