@@ -20,8 +20,15 @@ export default function TestPage() {
     const supabase = createClient();
     await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: "http://localhost:3000/auth/callback" },
+      options: {
+        redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
+      },
     });
+  };
+
+  const handleLogout = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
   };
 
   return (
@@ -32,6 +39,9 @@ export default function TestPage() {
       </div>
       <div>
         <button onClick={googleLogin}>구글 로그인 테스트</button>
+      </div>
+      <div>
+        <button onClick={handleLogout}>supabase 로그아웃</button>
       </div>
     </>
   );
