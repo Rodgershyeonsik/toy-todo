@@ -17,35 +17,46 @@
 - **대시보드** — Todo별 소요 시간 랭킹 및 비중을 차트로 시각화
 - **Todo 상세 보기 및 수정** — 대시보드에서 항목 클릭 시 상세 정보 확인 및 데이터 수정 가능
 - **드래그 앤 드롭 정렬** — Todo 목록을 드래그로 순서 변경 가능
-- 데이터는 브라우저 LocalStorage에 저장
 
 ---
 
 ## 기술 스택
 
-| 분류           | 기술              |
-| -------------- | ----------------- |
-| Framework      | Next.js, React    |
-| Language       | TypeScript        |
-| Styling        | TailwindCSS       |
-| 상태 관리      | Zustand           |
-| 서버 상태 관리 | TanStack Query    |
-| DB             | Supabase (도입중) |
-| 배포           | Vercel            |
+| 분류           | 기술                         |
+| -------------- | ---------------------------- |
+| Framework      | Next.js, React               |
+| Language       | TypeScript                   |
+| Styling        | TailwindCSS                  |
+| 상태 관리      | Zustand                      |
+| 서버 상태 관리 | TanStack Query               |
+| ORM            | Prisma                       |
+| DB             | Supabase (PostgreSQL)        |
+| 인증           | Supabase Auth + Google OAuth |
+| 배포           | Vercel                       |
 
 ---
 
 ## 프로젝트 구조
 
 ```
-├── api/          # LocalStorage 기반 API 레이어 (TanStack Query 연동)
-├── app/          # Next.js App Router 페이지
-├── components/   # UI 컴포넌트
-├── hooks/        # 커스텀 훅
-├── store/        # Zustand 전역 상태
-├── types/        # TypeScript 타입 정의
-├── utils/        # 유틸리티 함수
-└── constants/    # 상수 정의
+├── api/                      # API 레이어 (TanStack Query 연동)
+├── app/                      # Next.js App Router
+│   ├── auth/callback/        # OAuth 콜백 처리
+│   └── ...
+├── components/
+│   ├── common/               # 공통 UI 컴포넌트 (Modal 등)
+│   └── features/             # 기능별 컴포넌트
+│       ├── TaskPlayer/       # 스톱워치/타이머 플레이어
+│       └── ...
+├── hooks/                    # 커스텀 훅
+├── lib/                      # 외부 서비스 클라이언트
+│   ├── prisma.ts             # Prisma 클라이언트
+│   └── supabase/             # Supabase 클라이언트 (client / server)
+├── prisma/                   # DB 스키마
+├── store/                    # Zustand 전역 상태
+├── types/                    # TypeScript 타입 정의
+├── utils/                    # 유틸리티 함수
+└── constants/                # 상수 정의
 ```
 
 ---
@@ -56,3 +67,4 @@
 - **상태 관리 구조**: Props drilling 문제를 Zustand로 해소, TanStack Query 도입을 위해 LocalStorage 호출을 API 레이어로 분리
 - **TanStack Query 도입**: LocalStorage 호출을 API 함수로 추상화하고, `useQuery` / `useMutation`을 적용해 데이터 페칭 구조 학습
 - **타이머 구현**: `setInterval` 기반의 작업 시간 측정 로직 구현
+- **데이터 페칭 구조**: Server Action으로 DB 접근을 추상화하고, TanStack Query의 useQuery / useMutation으로 서버 상태 관리
