@@ -9,7 +9,6 @@ export const playerBasicStyle = `${flexBetweenCn} min-h-20 my-2 px-4 py-2 bg-gra
 
 export default function TaskPlayer() {
   const {
-    todos,
     mode,
     isPlaying,
     selectTodo,
@@ -30,11 +29,7 @@ export default function TaskPlayer() {
   return (
     <>
       {playerStatus === "IDLE" && (
-        <IdlePlayer
-          todos={todos}
-          onSelectTodo={selectTodo}
-          onSelectMode={handlePlayerMode}
-        />
+        <IdlePlayer onSelectTodo={selectTodo} onSelectMode={handlePlayerMode} />
       )}
       {isPlaying && mode === "TIMER" && (
         <TimerPlayer

@@ -1,22 +1,21 @@
-import { flexBetweenCn } from "@/constants/styles";
 import { PlayerMode } from "@/types/player";
-import { Todo } from "@/types/todo";
 import { cn, formatTimeToEn } from "@/utils";
 import { ChevronDown, Hourglass, Timer } from "lucide-react";
 import { playerBasicStyle } from ".";
+import useTodoStore from "@/store/useTodoStore";
 
 const playerToggleStyle =
   "py-1.5 px-3 border-gray-600 border rounded-md bg-gray-800 hover:bg-white/10";
 
 export default function IdlePlayer({
-  todos,
   onSelectTodo,
   onSelectMode,
 }: {
-  todos: Todo[];
   onSelectTodo: (value: string) => void;
   onSelectMode: (mode: PlayerMode) => void;
 }) {
+  const todos = useTodoStore((state) => state.todos);
+
   return (
     <div className={cn(playerBasicStyle, "bg-gray-700")}>
       <div className="flex w-full relative max-w-[70%] items-center bg-gray-800 border border-gray-600 outline-none text-sm rounded-md cursor-pointer">
