@@ -24,19 +24,30 @@ export const formatTime = (seconds: number) => {
 export const formatTimeToEn = (seconds: number) => {
   const { h, m, s } = parseSeconds(seconds);
 
-  if (h > 0 && m > 0 && s > 0) {
-    return `${h}h ${m}m ${s}s`;
+  let formatStr = "";
+
+  if (seconds === 0) return "0s";
+
+  if (h > 0) {
+    formatStr = formatStr + h + "h";
   }
 
-  if (m > 0 && s > 0) {
-    return `${m}m ${s}s`;
+  if (m > 0) {
+    formatStr = formatStr + m + "m";
   }
 
-  return `${s}s`;
+  if (s > 0) {
+    formatStr = formatStr + s + "s";
+  }
+
+  return formatStr;
 };
 
 export const formatMinutesToEn = (minutes: number) => {
   const { h, m } = parseMinutes(minutes);
+
+  if (minutes === 0) return "0m";
+
   if (h > 0 && m > 0) return `${h}h ${m}m`;
 
   if (h > 0 && m === 0) return h + "h";

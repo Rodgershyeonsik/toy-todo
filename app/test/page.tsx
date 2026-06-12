@@ -1,6 +1,7 @@
 "use client";
 
 import { createClient } from "@/lib/supabase/client";
+import { formatTimeToEn } from "@/utils";
 import { useState } from "react";
 
 export default function TestPage() {
@@ -43,6 +44,7 @@ export default function TestPage() {
       <div>
         <button onClick={handleLogout}>supabase 로그아웃</button>
       </div>
+      <div>{formatTimeToEn(3600)}</div>
     </>
   );
 }
