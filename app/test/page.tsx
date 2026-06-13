@@ -1,5 +1,6 @@
 "use client";
 
+import { createTodo } from "@/actions/todoActions";
 import { createClient } from "@/lib/supabase/client";
 import { formatTimeToEn } from "@/utils";
 import { useState } from "react";
@@ -43,6 +44,11 @@ export default function TestPage() {
       </div>
       <div>
         <button onClick={handleLogout}>supabase 로그아웃</button>
+      </div>
+      <div>
+        <button onClick={() => createTodo("테스트 할 일", 30).then(console.log).catch(console.error)}>
+          createTodo 테스트
+        </button>
       </div>
       <div>{formatTimeToEn(3600)}</div>
     </>
