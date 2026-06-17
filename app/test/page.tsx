@@ -1,8 +1,8 @@
 "use client";
 
-import { createTodo } from "@/actions/todoActions";
+import { createTodo, getTodos } from "@/actions/todoActions";
 import { createClient } from "@/lib/supabase/client";
-import { formatTimeToEn } from "@/utils";
+import { googleLogin, handleLogout } from "@/utils/login";
 import { useState } from "react";
 
 export default function TestPage() {
@@ -18,21 +18,6 @@ export default function TestPage() {
     }
   };
 
-  const googleLogin = async () => {
-    const supabase = createClient();
-    await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
-      },
-    });
-  };
-
-  const handleLogout = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-  };
-
   return (
     <>
       <div>
@@ -40,17 +25,23 @@ export default function TestPage() {
         {result && <p>{result}</p>}
       </div>
       <div>
-        <button onClick={googleLogin}>구글 로그인 테스트</button>
-      </div>
-      <div>
-        <button onClick={handleLogout}>supabase 로그아웃</button>
-      </div>
-      <div>
-        <button onClick={() => createTodo("테스트 할 일", 30).then(console.log).catch(console.error)}>
+        <button
+          onClick={() =>
+            createTodo("테스트 할 일1", 30)
+              .then(console.log)
+              .catch(console.error)
+          }
+        >
           createTodo 테스트
         </button>
       </div>
-      <div>{formatTimeToEn(3600)}</div>
+      <div>
+        <button
+          onClick={() => getTodos().then(console.log).catch(console.error)}
+        >
+          createTodo 테스트
+        </button>
+      </div>
     </>
   );
 }

@@ -24,6 +24,7 @@ import { useModalStore } from "@/store/useModalStore";
 import { cn } from "@/utils";
 import { useTodos } from "@/hooks/useTodos";
 import { useBeforeUnloadSync } from "@/hooks/useBeforeUnloadSync";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Home() {
   const { isLoading } = useTodos();
@@ -37,6 +38,12 @@ export default function Home() {
     setQuickEditingText,
   } = useTodoStore();
   const { openModal } = useModalStore();
+  const {
+    user,
+    isLoading: userIsLoading,
+    signInWithGoogle,
+    signOut,
+  } = useAuth();
 
   const handleAddTodo = () => {
     const newTodo = createTodo();
@@ -96,23 +103,50 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex justify-center">
-      <div className="w-full max-w-lg px-6 py-10">
+      <div className="w-full max-w-lg px-6 py-5">
         <header>
-          <div className="flex justify-between">
-            <div>
-              <h1 className="text-3xl font-bold">FOCUS DO!</h1>
-              <span className="text-sm text-gray-500">
-                할 일들의 소요시간을 기록하고 관리해보자
-              </span>
+          <div className="flex flex-col">
+            <div className="flex justify-end">
+              {user ? (
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={signOut}
+                    className="flex justify-around items-center px-2.5 py-1.5 gap-1 hover:bg-gray-300 rounded border border-gray-300 bg-[#F2F2F2]"
+                  >
+                    <img
+                      src={user.user_metadata.avatar_url}
+                      alt="profile"
+                      className="w-8 h-8 rounded-full"
+                    />
+                    <span className="text-md font-semibold text-gray-500">
+                      Logout
+                    </span>
+                  </button>
+                </div>
+              ) : (
+                <button onClick={signInWithGoogle}>
+                  <img
+                    src="/web_neutral_sq_SU.svg"
+                    alt="Sign in with Google"
+                  ></img>
+                </button>
+              )}
             </div>
-            <button onClick={() => openModal(<TodoEditor />)}>
-              <SquarePlus
-                className="text-gray-400 hover:text-blue-400"
-                size={40}
-              />
-            </button>
+            <div className="flex justify-between items-start mt-2">
+              <div>
+                <h1 className="text-3xl font-bold">FOCUS DO!</h1>
+                <span className="text-sm text-gray-500">
+                  할 일들의 소요시간을 기록하고 관리해보자
+                </span>
+              </div>
+              <button onClick={() => openModal(<TodoEditor />)}>
+                <SquarePlus
+                  className="text-gray-400 hover:text-blue-400"
+                  size={40}
+                />
+              </button>
+            </div>
           </div>
-
           <div className="flex justify-end gap-2 mt-3">
             <button
               className={`${flexCenterCn} ${basicButtonCn} flex-1 border-gray-200 bg-gray-100 hover:bg-black/20`}
