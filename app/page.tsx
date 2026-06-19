@@ -111,14 +111,14 @@ export default function Home() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={signOut}
-                    className="flex justify-around items-center px-2.5 py-1.5 gap-1 hover:bg-gray-300 rounded border border-gray-300 bg-[#F2F2F2]"
+                    className="flex h-10 gap-2 items-center px-2 rounded border-2 border-gray-200 bg-[#F2F2F2] cursor-pointer"
                   >
                     <img
                       src={user.user_metadata.avatar_url}
                       alt="profile"
-                      className="w-8 h-8 rounded-full"
+                      className="w-5 h-5 rounded-full"
                     />
-                    <span className="text-md font-semibold text-gray-500">
+                    <span className="text-md text-gray-800 font-sans">
                       Logout
                     </span>
                   </button>
@@ -128,6 +128,7 @@ export default function Home() {
                   <img
                     src="/web_neutral_sq_SU.svg"
                     alt="Sign in with Google"
+                    className="cursor-pointer"
                   ></img>
                 </button>
               )}
