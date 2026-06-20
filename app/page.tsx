@@ -25,9 +25,11 @@ import { cn } from "@/utils";
 import { useTodos } from "@/hooks/useTodos";
 import { useBeforeUnloadSync } from "@/hooks/useBeforeUnloadSync";
 import { useAuth } from "@/hooks/useAuth";
+import useUserStore from "@/store/useUserStore";
 
 export default function Home() {
   const { isLoading } = useTodos();
+  const user = useUserStore((state) => state.user);
   const todos = useTodoStore((state) => state.todos);
   const {
     setTodos,
@@ -38,12 +40,7 @@ export default function Home() {
     setQuickEditingText,
   } = useTodoStore();
   const { openModal } = useModalStore();
-  const {
-    user,
-    isLoading: userIsLoading,
-    signInWithGoogle,
-    signOut,
-  } = useAuth();
+  const { isLoading: userIsLoading, signInWithGoogle, signOut } = useAuth();
 
   const handleAddTodo = () => {
     const newTodo = createTodo();
@@ -94,7 +91,7 @@ export default function Home() {
 
   useBeforeUnloadSync();
 
-  if (isLoading)
+  if (isLoading || userIsLoading)
     return (
       <div className={cn(flexCenterCn, "w-full h-screen")}>
         <span> LOADING...</span>

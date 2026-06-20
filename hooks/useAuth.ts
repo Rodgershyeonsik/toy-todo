@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
+import useUserStore from "@/store/useUserStore";
 
 const supabase = createClient();
 
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(null);
+  const setUser = useUserStore((state) => state.setUser);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -33,5 +33,5 @@ export function useAuth() {
 
   const signOut = () => supabase.auth.signOut();
 
-  return { user, isLoading, signInWithGoogle, signOut };
+  return { isLoading, signInWithGoogle, signOut };
 }
