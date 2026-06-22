@@ -11,10 +11,27 @@ export async function getTodos() {
 
   if (!user) throw new Error("Unauthorized");
 
-  return await prisma.todo.findMany({
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const todos = await prisma.todo.findMany({
     where: { userId: user.id },
     orderBy: { order: "asc" },
+    include: {
+      dailyLogs: {
+        where: { date: today },
+      },
+    },
   });
+
+  return todos.map((todo) => ({
+    id: todo.id,
+    task: todo.task,
+    completed: todo.completed,
+    dailyGoalTime: todo.dailyGoalTime ?? undefined,
+    elapsedTime: todo.dailyLogs[0]?.elapsedTime ?? 0,
+    isRunning: false,
+  }));
 }
 
 export async function createTodo(task: string, dailyGoalTime?: number) {
@@ -43,7 +60,12 @@ export async function createTodo(task: string, dailyGoalTime?: number) {
 
 export async function updateTodo(
   id: string,
-  data: { task?: string; completed?: boolean; dailyGoalTime?: number | null; order?: number }
+  data: {
+    task?: string;
+    completed?: boolean;
+    dailyGoalTime?: number | null;
+    order?: number;
+  }
 ) {
   const supabase = await createClient();
   const {
