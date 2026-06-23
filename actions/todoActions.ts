@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { createClient } from "@/lib/supabase/server";
 
-export async function getTodos() {
+export async function getTodosAction() {
   const supabase = await createClient();
   const {
     data: { user },
@@ -34,7 +34,7 @@ export async function getTodos() {
   }));
 }
 
-export async function createTodo(task: string, dailyGoalTime?: number) {
+export async function createTodoAction(task: string, dailyGoalTime?: number) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -58,7 +58,7 @@ export async function createTodo(task: string, dailyGoalTime?: number) {
   });
 }
 
-export async function updateTodo(
+export async function updateTodoAction(
   id: string,
   data: {
     task?: string;
@@ -80,7 +80,7 @@ export async function updateTodo(
   });
 }
 
-export async function deleteTodo(id: string) {
+export async function deleteTodoAction(id: string) {
   const supabase = await createClient();
   const {
     data: { user },

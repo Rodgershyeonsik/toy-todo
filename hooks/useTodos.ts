@@ -1,4 +1,4 @@
-import { getTodos } from "@/actions/todoActions";
+import { getTodosAction } from "@/actions/todoActions";
 import { fetchTodos } from "@/api/todoApi";
 import useTodoStore from "@/store/useTodoStore";
 import useUserStore from "@/store/useUserStore";
@@ -7,12 +7,12 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 
 export const useTodos = () => {
-  const setTodos = useTodoStore((state) => state.setTodos);
+  const { setTodos } = useTodoStore();
   const user = useUserStore((state) => state.user);
 
   const query = useQuery<Todo[], Error>({
     queryKey: user ? ["todos", user.id] : ["todos"],
-    queryFn: user ? getTodos : fetchTodos,
+    queryFn: user ? getTodosAction : fetchTodos,
     staleTime: 1000 * 60 * 5,
   });
 

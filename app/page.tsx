@@ -42,7 +42,7 @@ export default function Home() {
   const { openModal } = useModalStore();
   const { isLoading: userIsLoading, signInWithGoogle, signOut } = useAuth();
 
-  const handleAddTodo = () => {
+  const handleAddNewTodo = () => {
     const newTodo = createTodo();
     addTodo(newTodo);
     setEditingTodo(newTodo);
@@ -165,7 +165,10 @@ export default function Home() {
 
         <main>
           <div className="py-2">
-            <button className="text-lg text-gray-400" onClick={handleAddTodo}>
+            <button
+              className="text-lg text-gray-400"
+              onClick={handleAddNewTodo}
+            >
               {" "}
               + 할 일 추가...
             </button>
