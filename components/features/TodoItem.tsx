@@ -1,5 +1,6 @@
 import { useTodoMutation } from "@/hooks/useTodoMutation";
 import useTodoStore from "@/store/useTodoStore";
+import useUserStore from "@/store/useUserStore";
 import { Todo } from "@/types/todo";
 
 type TodoItemProps = {
@@ -7,12 +8,13 @@ type TodoItemProps = {
 };
 
 export default function TodoItem({ todo }: TodoItemProps) {
-  const { updateTodos } = useTodoMutation();
+  const { addTodo, updateTodos, deleteTodo } = useTodoMutation();
+  const user = useUserStore((state) => state.user);
   const editingTodo = useTodoStore((state) => state.editingTodo);
   const editingText = useTodoStore((state) => state.quickEditingText);
   const {
     setEditingTodo,
-    deleteTodo,
+    removeTodo,
     toggleTodo,
     saveQuickEdit,
     setQuickEditingText,
@@ -23,12 +25,14 @@ export default function TodoItem({ todo }: TodoItemProps) {
     saveQuickEdit(text);
     const latestTodos = useTodoStore.getState().todos;
     updateTodos(latestTodos);
+    if (user && editingTodo) addTodo({ id: editingTodo.id, task: text });
   };
 
   const handleDeleteTodo = (id: string) => {
-    deleteTodo(id);
+    removeTodo(id);
     const latestTodos = useTodoStore.getState().todos;
     updateTodos(latestTodos);
+    if (user) deleteTodo(id);
   };
 
   return (
