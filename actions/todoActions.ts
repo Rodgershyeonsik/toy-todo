@@ -34,7 +34,11 @@ export async function getTodosAction() {
   }));
 }
 
-export async function createTodoAction(task: string, dailyGoalTime?: number) {
+export async function createTodoAction(
+  id: string,
+  task: string,
+  dailyGoalTime?: number
+) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -50,6 +54,7 @@ export async function createTodoAction(task: string, dailyGoalTime?: number) {
 
   return await prisma.todo.create({
     data: {
+      id,
       task,
       dailyGoalTime,
       order: (lastTodo?.order ?? -1) + 1,

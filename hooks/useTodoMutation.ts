@@ -13,12 +13,14 @@ export const useTodoMutation = () => {
 
   const addMutation = useMutation({
     mutationFn: ({
+      id,
       task,
       dailyGoalTime,
     }: {
+      id: string;
       task: string;
       dailyGoalTime?: number;
-    }) => createTodoAction(task, dailyGoalTime),
+    }) => createTodoAction(id, task, dailyGoalTime),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["todos", user?.id] });
     },
