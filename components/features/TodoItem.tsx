@@ -8,7 +8,7 @@ type TodoItemProps = {
 };
 
 export default function TodoItem({ todo }: TodoItemProps) {
-  const { addTodo, updateTodos, deleteTodo } = useTodoMutation();
+  const { upsertTodo, updateTodos, deleteTodo } = useTodoMutation();
   const user = useUserStore((state) => state.user);
   const editingTodo = useTodoStore((state) => state.editingTodo);
   const editingText = useTodoStore((state) => state.quickEditingText);
@@ -23,9 +23,21 @@ export default function TodoItem({ todo }: TodoItemProps) {
 
   const handleSaveTodo = (text: string) => {
     saveQuickEdit(text);
-    const latestTodos = useTodoStore.getState().todos;
-    updateTodos(latestTodos);
-    if (user && editingTodo) addTodo({ id: editingTodo.id, task: text });
+    if (user) {
+      if (editingTodo) {
+        upsertTodo({
+          id: editingTodo.id,
+          data: {
+            task: text,
+            dailyGoalTime: editingTodo.dailyGoalTime,
+            completed: editingTodo.completed,
+          },
+        });
+      }
+    } else {
+      const latestTodos = useTodoStore.getState().todos;
+      updateTodos(latestTodos);
+    }
   };
 
   const handleDeleteTodo = (id: string) => {

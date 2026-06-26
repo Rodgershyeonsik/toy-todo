@@ -28,7 +28,7 @@ export async function getTodosAction() {
     id: todo.id,
     task: todo.task,
     completed: todo.completed,
-    dailyGoalTime: todo.dailyGoalTime ?? undefined,
+    dailyGoalTime: todo.dailyGoalTime,
     elapsedTime: todo.dailyLogs[0]?.elapsedTime ?? 0,
     isRunning: false,
   }));
@@ -37,7 +37,7 @@ export async function getTodosAction() {
 export async function createTodoAction(
   id: string,
   task: string,
-  dailyGoalTime?: number
+  dailyGoalTime: number | null
 ) {
   const supabase = await createClient();
   const {
@@ -83,6 +83,29 @@ export async function updateTodoAction(
     where: { id, userId: user.id },
     data,
   });
+}
+
+export async function upsertTodoAction(
+  id: string,
+  data: {
+    task: string;
+    completed: boolean;
+    dailyGoalTime: number | null;
+    order?: number;
+  }
+) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const existing = await prisma.todo.findUnique({ where: { id } });
+
+  if (existing && user) {
+    if (existing.userId !== user.id) throw new Error("Forbidden"); // 보안 체크 해결
+    return updateTodoAction(id, data);
+  } else {
+    return createTodoAction(id, data.task, data.dailyGoalTime);
+  }
 }
 
 export async function deleteTodoAction(id: string) {

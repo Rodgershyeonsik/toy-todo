@@ -3,17 +3,23 @@ export interface Todo {
   task: string;
   completed: boolean;
   elapsedTime: number;
-  dailyGoalTime?: number;
+  dailyGoalTime: number | null;
   isRunning: boolean;
 }
 
-export type TodoFormData = Pick<Todo, "task" | "dailyGoalTime">;
+export type TodoFormData = {
+  task: string;
+  dailyGoalTime?: number;
+};
 
-export const createTodo = (task?: string, dailyGoalTime?: number): Todo => ({
+export const createTodo = (
+  task?: string,
+  dailyGoalTime?: number | null
+): Todo => ({
   id: crypto.randomUUID(),
   task: task ?? "",
   completed: false,
   elapsedTime: 0,
-  dailyGoalTime: dailyGoalTime,
+  dailyGoalTime: dailyGoalTime ?? null,
   isRunning: false,
 });

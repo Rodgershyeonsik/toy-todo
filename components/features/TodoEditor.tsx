@@ -20,7 +20,7 @@ export default function TodoEditor({ todo }: TodoEditorProps) {
   const { openModal, closeModal } = useModalStore();
   const [formData, setFormData] = useState<TodoFormData>({
     task: todo ? todo.task : "",
-    dailyGoalTime: todo ? todo.dailyGoalTime : 0,
+    dailyGoalTime: todo ? todo.dailyGoalTime ?? undefined : undefined,
   });
 
   const isEdit = !!todo;
@@ -36,11 +36,16 @@ export default function TodoEditor({ todo }: TodoEditorProps) {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const data = {
+      task: formData.task,
+      dailyGoalTime: formData.dailyGoalTime ?? null,
+    };
+
     if (isEdit) {
-      updateTodo(todo.id, formData);
+      updateTodo(todo.id, data);
       openModal(<ModalConfirm text={"할 일 수정 완료!"} />);
     } else {
-      addTodo(createTodo(formData.task, formData.dailyGoalTime));
+      addTodo(createTodo(data.task, data.dailyGoalTime));
       openModal(<ModalConfirm text={"할 일 추가 완료!"} />);
     }
     const latestTodos = useTodoStore.getState().todos;
@@ -77,7 +82,7 @@ export default function TodoEditor({ todo }: TodoEditorProps) {
           <input
             type="number"
             name="dailyGoalTime"
-            value={formData.dailyGoalTime}
+            value={formData.dailyGoalTime ?? undefined}
             onChange={handleChange}
             placeholder="plz enter daily goal time..."
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition"

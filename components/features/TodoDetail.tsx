@@ -15,7 +15,7 @@ type TodoDetailProps = {
   todo: Todo;
 };
 
-const getGoalTimeText = (goalTime?: number) => {
+const getGoalTimeText = (goalTime: number | null) => {
   if (!goalTime) return "Not Set";
 
   return formatMinutesToEn(goalTime);
