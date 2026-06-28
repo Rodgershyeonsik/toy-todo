@@ -12,6 +12,13 @@ export const useTodoMutation = () => {
   const user = useUserStore((state) => state.user);
   const queryClient = useQueryClient();
 
+  const updateTodosMutation = useMutation({
+    mutationFn: saveTodos,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["todos"] });
+    },
+  });
+
   const addMutation = useMutation({
     mutationFn: ({
       id,
@@ -28,9 +35,20 @@ export const useTodoMutation = () => {
   });
 
   const updateMutation = useMutation({
-    mutationFn: saveTodos,
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: {
+        task: string;
+        completed?: boolean;
+        dailyGoalTime: number | null;
+        order?: number;
+      };
+    }) => updateTodoAction(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["todos"] });
+      queryClient.invalidateQueries({ queryKey: ["todos", user?.id] });
     },
   });
 
@@ -57,8 +75,11 @@ export const useTodoMutation = () => {
   });
 
   return {
+    updateTodos: updateTodosMutation.mutate,
     addTodo: addMutation.mutate,
-    updateTodos: updateMutation.mutate,
+    addTodoAsync: addMutation.mutateAsync,
+    updateTodo: updateMutation.mutate,
+    updateTodoAsync: updateMutation.mutateAsync,
     upsertTodo: upsertMutation.mutate,
     deleteTodo: deleteMutation.mutate,
   };

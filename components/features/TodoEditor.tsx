@@ -7,6 +7,7 @@ import { ChangeEvent, FormEvent, useState } from "react";
 import ModalConfirm from "../common/ModalConfirm";
 import { CircleX } from "lucide-react";
 import { useTodoMutation } from "@/hooks/useTodoMutation";
+import useUserStore from "@/store/useUserStore";
 
 type TodoEditorProps = {
   todo?: Todo;
@@ -15,8 +16,9 @@ type TodoEditorProps = {
 const labelCn = "text-lg font-mono font-bold";
 
 export default function TodoEditor({ todo }: TodoEditorProps) {
-  const { updateTodos } = useTodoMutation();
-  const { patchTodo: updateTodo, addTodo } = useTodoStore();
+  const { updateTodos, addTodoAsync, updateTodoAsync } = useTodoMutation();
+  const user = useUserStore((state) => state.user);
+  const { patchTodo, addTodo, removeTodo } = useTodoStore();
   const { openModal, closeModal } = useModalStore();
   const [formData, setFormData] = useState<TodoFormData>({
     task: todo ? todo.task : "",
@@ -34,7 +36,7 @@ export default function TodoEditor({ todo }: TodoEditorProps) {
     }));
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data = {
       task: formData.task,
@@ -42,14 +44,40 @@ export default function TodoEditor({ todo }: TodoEditorProps) {
     };
 
     if (isEdit) {
-      updateTodo(todo.id, data);
-      openModal(<ModalConfirm text={"할 일 수정 완료!"} />);
+      const originTodo = { ...todo };
+      patchTodo(todo.id, data);
+      let msg = "할 일 수정 완료!";
+      if (user) {
+        try {
+          await updateTodoAsync({ id: todo.id, data });
+        } catch (error) {
+          msg = "할 일 수정 실패.";
+          patchTodo(todo.id, {
+            task: originTodo.task,
+            dailyGoalTime: originTodo.dailyGoalTime,
+          });
+        }
+      }
+      openModal(<ModalConfirm text={msg} />);
     } else {
-      addTodo(createTodo(data.task, data.dailyGoalTime));
-      openModal(<ModalConfirm text={"할 일 추가 완료!"} />);
+      const newTodo = createTodo(data.task, data.dailyGoalTime);
+      addTodo(newTodo);
+      let msg = "할 일 추가 완료!";
+      if (user) {
+        try {
+          await addTodoAsync(newTodo);
+        } catch (error) {
+          msg = "할 일 추가 실패.";
+          removeTodo(newTodo.id);
+        }
+      }
+      openModal(<ModalConfirm text={msg} />);
     }
-    const latestTodos = useTodoStore.getState().todos;
-    updateTodos(latestTodos);
+
+    if (!user) {
+      const latestTodos = useTodoStore.getState().todos;
+      updateTodos(latestTodos);
+    }
   };
 
   const title = !isEdit ? "Create Todo!" : "Edit Todo!";
