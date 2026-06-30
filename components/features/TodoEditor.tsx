@@ -110,7 +110,7 @@ export default function TodoEditor({ todo }: TodoEditorProps) {
           <input
             type="number"
             name="dailyGoalTime"
-            value={formData.dailyGoalTime ?? undefined}
+            value={formData.dailyGoalTime ?? ""}
             onChange={handleChange}
             placeholder="plz enter daily goal time..."
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
