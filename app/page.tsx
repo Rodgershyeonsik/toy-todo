@@ -26,9 +26,20 @@ import { useTodos } from "@/hooks/useTodos";
 import { useBeforeUnloadSync } from "@/hooks/useBeforeUnloadSync";
 import { useAuth } from "@/hooks/useAuth";
 import useUserStore from "@/store/useUserStore";
+import { useDailyLogs } from "@/hooks/useDailyLogs";
+import { useEffect } from "react";
 
 export default function Home() {
-  const { isLoading } = useTodos();
+  const {
+    data: userTodos,
+    isLoading: todosLoading,
+    isError: todosError,
+  } = useTodos();
+  const {
+    data: dailyLogs,
+    isLoading: logsLoading,
+    isError: logsError,
+  } = useDailyLogs();
   const user = useUserStore((state) => state.user);
   const todos = useTodoStore((state) => state.todos);
   const {
@@ -89,12 +100,44 @@ export default function Home() {
     }
   };
 
+  useEffect(() => {
+    const currentTodos = useTodoStore.getState().todos;
+    if (!user) {
+      setTodos(todos);
+    } else if (
+      user &&
+      !logsLoading &&
+      !todosLoading &&
+      userTodos &&
+      dailyLogs
+    ) {
+      const merge = userTodos?.map((t) => ({
+        ...t,
+        elapsedTime:
+          dailyLogs?.find((log) => log.todoId === t.id)?.elapsedTime ?? 0,
+        isRunning:
+          currentTodos.find((ct) => ct.id === t.id)?.isRunning ?? false,
+      }));
+      console.log(`dailylogs: ${dailyLogs}`);
+      setTodos(merge ?? []);
+    }
+  }, [user, userTodos, dailyLogs, logsLoading, todosLoading]);
+
   useBeforeUnloadSync();
 
-  if (isLoading || userIsLoading)
+  if (todosLoading || userIsLoading || logsLoading)
     return (
       <div className={cn(flexCenterCn, "w-full h-screen")}>
         <span> LOADING...</span>
+      </div>
+    );
+
+  if (todosError || logsError)
+    return (
+      <div className={cn(flexCenterCn, "w-full h-screen")}>
+        <span>
+          데이터 불러오기 실패<br></br>다시 시도해주세요
+        </span>
       </div>
     );
 
