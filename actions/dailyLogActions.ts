@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 
 function getTodayDate() {
   const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  today.setUTCHours(0, 0, 0, 0);
   return today;
 }
 
@@ -29,7 +29,6 @@ export async function upsertDailyLogAction(
   });
 }
 
-
 export async function getDailyLogsAction(date?: Date) {
   const supabase = await createClient();
   const {
@@ -39,8 +38,8 @@ export async function getDailyLogsAction(date?: Date) {
   if (!user) throw new Error("Unauthorized");
 
   const targetDate = date ?? getTodayDate();
-
-  return await prisma.dailyLog.findMany({
+  const logs = await prisma.dailyLog.findMany({
     where: { userId: user.id, date: targetDate },
   });
+  return logs;
 }
