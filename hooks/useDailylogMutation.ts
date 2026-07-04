@@ -19,4 +19,9 @@ export const useDailyLogMutation = () => {
       });
     },
   });
+
+  return {
+    upsertDailyLog: upsertMutation.mutate,
+    upsertDailyLogAsync: upsertMutation.mutateAsync,
+  };
 };

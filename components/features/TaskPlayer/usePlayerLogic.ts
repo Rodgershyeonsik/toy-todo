@@ -1,14 +1,19 @@
+import { useDailyLogMutation } from "@/hooks/useDailylogMutation";
 import { useTodoMutation } from "@/hooks/useTodoMutation";
 import useTodoStore from "@/store/useTodoStore";
+import useUserStore from "@/store/useUserStore";
 import { PlayerMode, PlayerStep } from "@/types/player";
 import { Todo } from "@/types/todo";
 import { playBeep } from "@/utils";
 import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
 export function usePlayerLogic() {
   const { updateTodos } = useTodoMutation();
   const todos = useTodoStore((state) => state.todos);
   const { patchTodo } = useTodoStore();
+  const { user } = useUserStore();
+  const { upsertDailyLogAsync } = useDailyLogMutation();
   const [playerStatus, setPlayerStatus] = useState<PlayerStep>("IDLE");
   const [mode, setMode] = useState<PlayerMode>("STOPWATCH");
   const [duration, setDuration] = useState(0);
@@ -61,10 +66,21 @@ export function usePlayerLogic() {
     } else {
       patchTodo(id, { isRunning: false });
     }
-
-    const latestTodos = useTodoStore.getState().todos;
-    updateTodos(latestTodos);
     setPlayerStatus("IDLE");
+
+    if (user) {
+      const latestElapsed =
+        useTodoStore.getState().todos.find((t) => t.id === id)?.elapsedTime ??
+        0;
+      upsertDailyLogAsync({ todoId: id, elapsedTime: latestElapsed }).catch(
+        () => {
+          toast.error("저장에 실패했습니다.");
+        }
+      );
+    } else {
+      const latestTodos = useTodoStore.getState().todos;
+      updateTodos(latestTodos);
+    }
   };
 
   const pauseStopwatch = (id?: string) => {
@@ -74,8 +90,19 @@ export function usePlayerLogic() {
       clearInterval(timerRef.current);
       const elapsed = Math.floor((Date.now() - startTimeRef.current!) / 1000);
       patchTodo(id, { elapsedTime: baseElapsedRef.current + elapsed });
-      const latestTodos = useTodoStore.getState().todos;
-      updateTodos(latestTodos);
+      if (user) {
+        const latestElapsed =
+          useTodoStore.getState().todos.find((t) => t.id === id)?.elapsedTime ??
+          0;
+        upsertDailyLogAsync({ todoId: id, elapsedTime: latestElapsed }).catch(
+          () => {
+            toast.error("저장에 실패했습니다.");
+          }
+        );
+      } else {
+        const latestTodos = useTodoStore.getState().todos;
+        updateTodos(latestTodos);
+      }
     }
     timerRef.current = null;
     setPlayerStatus("PAUSED");
