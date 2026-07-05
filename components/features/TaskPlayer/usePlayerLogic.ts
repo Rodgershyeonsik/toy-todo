@@ -140,9 +140,22 @@ export function usePlayerLogic() {
       });
     }
     setDuration(0);
-    const latestTodos = useTodoStore.getState().todos;
-    updateTodos(latestTodos);
     setPlayerStatus("IDLE");
+
+    if (user) {
+      const latestElapsed =
+        useTodoStore.getState().todos.find((t) => t.id === runningTodo.id)
+          ?.elapsedTime ?? 0;
+      upsertDailyLogAsync({
+        todoId: runningTodo.id,
+        elapsedTime: latestElapsed,
+      }).catch(() => {
+        toast.error("저장에 실패했습니다.");
+      });
+    } else {
+      const latestTodos = useTodoStore.getState().todos;
+      updateTodos(latestTodos);
+    }
   };
 
   const pauseTimer = (runningTodo?: Todo) => {
@@ -157,8 +170,20 @@ export function usePlayerLogic() {
       });
       setDuration(Math.max(0, initialDurationRef.current - elapsed));
       elapsedRef.current = 0;
-      const latestTodos = useTodoStore.getState().todos;
-      updateTodos(latestTodos);
+      if (user) {
+        const latestElapsed =
+          useTodoStore.getState().todos.find((t) => t.id === runningTodo.id)
+            ?.elapsedTime ?? 0;
+        upsertDailyLogAsync({
+          todoId: runningTodo.id,
+          elapsedTime: latestElapsed,
+        }).catch(() => {
+          toast.error("저장에 실패했습니다.");
+        });
+      } else {
+        const latestTodos = useTodoStore.getState().todos;
+        updateTodos(latestTodos);
+      }
     }
     timerRef.current = null;
     setPlayerStatus("PAUSED");
@@ -196,12 +221,22 @@ export function usePlayerLogic() {
         patchTodo(runningTodo.id, {
           elapsedTime: runningTodo.elapsedTime + elapsedRef.current,
         });
+        if (user) {
+          const latestElapsed =
+            useTodoStore.getState().todos.find((t) => t.id === runningTodo.id)
+              ?.elapsedTime ?? 0;
+          upsertDailyLogAsync({
+            todoId: runningTodo.id,
+            elapsedTime: latestElapsed,
+          }).catch(() => {
+            toast.error("저장에 실패했습니다.");
+          });
+        } else {
+          const latestTodos = useTodoStore.getState().todos;
+          updateTodos(latestTodos);
+        }
       }
-
-      const latestTodos = useTodoStore.getState().todos;
-      updateTodos(latestTodos);
       setPlayerStatus("READY");
-      playBeep();
     }
   }, [duration]);
 
