@@ -118,7 +118,6 @@ export default function Home() {
         isRunning:
           currentTodos.find((ct) => ct.id === t.id)?.isRunning ?? false,
       }));
-      console.log(`dailylogs: ${dailyLogs}`);
       setTodos(merge ?? []);
     }
   }, [user, userTodos, dailyLogs, logsLoading, todosLoading]);
