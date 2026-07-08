@@ -102,8 +102,8 @@ export default function Home() {
 
   useEffect(() => {
     const currentTodos = useTodoStore.getState().todos;
-    if (!user) {
-      setTodos(todos);
+    if (!user && userTodos) {
+      setTodos(userTodos ?? []);
     } else if (
       user &&
       !logsLoading &&
