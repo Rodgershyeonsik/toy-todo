@@ -7,10 +7,16 @@ import {
 import { saveTodos } from "@/api/todoApi";
 import useUserStore from "@/store/useUserStore";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 export const useTodoMutation = () => {
   const user = useUserStore((state) => state.user);
   const queryClient = useQueryClient();
+
+  const handleMutationError = () => {
+    toast.error("데이터 동기화에 실패했습니다.");
+    queryClient.invalidateQueries({ queryKey: ["todos", user?.id] });
+  };
 
   const updateTodosMutation = useMutation({
     mutationFn: saveTodos,
@@ -32,6 +38,7 @@ export const useTodoMutation = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["todos", user?.id] });
     },
+    // 실패 처리는 TodoEditor에서 스냅샷 복원(수동 롤백)으로 담당
   });
 
   const updateMutation = useMutation({
@@ -50,6 +57,7 @@ export const useTodoMutation = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["todos", user?.id] });
     },
+    // 실패 처리는 TodoEditor에서 스냅샷 복원(수동 롤백)으로 담당
   });
 
   const upsertMutation = useMutation({
@@ -68,10 +76,12 @@ export const useTodoMutation = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["todos", user?.id] });
     },
+    onError: handleMutationError,
   });
 
   const deleteMutation = useMutation({
     mutationFn: deleteTodoAction,
+    onError: handleMutationError,
   });
 
   return {
