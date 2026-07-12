@@ -20,6 +20,12 @@ export async function upsertDailyLogAction(
 
   if (!user) throw new Error("Unauthorized");
 
+  const todo = await prisma.todo.findUnique({
+    where: { id: todoId },
+    select: { userId: true },
+  });
+  if (!todo || todo.userId !== user.id) throw new Error("Forbidden");
+
   const today = getTodayDate();
 
   return await prisma.dailyLog.upsert({
