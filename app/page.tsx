@@ -28,6 +28,11 @@ import { useAuth } from "@/hooks/useAuth";
 import useUserStore from "@/store/useUserStore";
 import { useDailyLogs } from "@/hooks/useDailyLogs";
 import { useEffect } from "react";
+import ModalConfirm from "@/components/common/ModalConfirm";
+
+const loginMsg = `지금 저장된 작업 기록은 이 브라우저에만 있고,
+로그인 계정으로 옮겨지지 않아요.
+계속할까요?`;
 
 export default function Home() {
   const {
@@ -50,7 +55,7 @@ export default function Home() {
     moveTodo,
     setQuickEditingText,
   } = useTodoStore();
-  const { openModal } = useModalStore();
+  const { openModal, closeModal } = useModalStore();
   const { isLoading: userIsLoading, signInWithGoogle, signOut } = useAuth();
 
   const handleAddNewTodo = () => {
@@ -103,7 +108,7 @@ export default function Home() {
   useEffect(() => {
     const currentTodos = useTodoStore.getState().todos;
     if (!user && userTodos) {
-      setTodos(userTodos ?? []);
+      setTodos(userTodos);
     } else if (
       user &&
       !logsLoading &&
@@ -163,7 +168,18 @@ export default function Home() {
                   </button>
                 </div>
               ) : (
-                <button onClick={signInWithGoogle}>
+                <button
+                  onClick={() =>
+                    openModal(
+                      <ModalConfirm
+                        title={"⚠️ 로그인 전 확인"}
+                        text={loginMsg}
+                        onOk={signInWithGoogle}
+                        onCancel={closeModal}
+                      />
+                    )
+                  }
+                >
                   <img
                     src="/web_neutral_sq_SU.svg"
                     alt="Sign in with Google"

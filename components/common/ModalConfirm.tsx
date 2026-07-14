@@ -3,12 +3,14 @@ import { useModalStore } from "@/store/useModalStore";
 import { cn } from "@/utils";
 
 type ModalConfirmProps = {
+  title?: string;
   text: string;
   onOk?: () => void;
   onCancel?: () => void;
 };
 
 export default function ModalConfirm({
+  title,
   text,
   onOk,
   onCancel,
@@ -17,7 +19,14 @@ export default function ModalConfirm({
 
   return (
     <div className="flex flex-col">
-      <span className="flex justify-center py-5 text-lg">{text}</span>
+      {title && (
+        <span className="flex justify-center px-2.5 py-1 font-bold text-lg">
+          {title}
+        </span>
+      )}
+      <span className="flex justify-center px-2.5 py-3.5 text-md whitespace-pre-line text-center">
+        {text}
+      </span>
       <div
         className={cn("flex w-full justify-end gap-1", {
           "justify-between": onCancel,
