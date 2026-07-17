@@ -1,6 +1,12 @@
 import { getPeriodRange } from "./statistics";
 
 describe("getPeriodRange", () => {
+  it("입력한 refDate 원본을 변경하지 않는다", () => {
+    const input = new Date("2026-07-15T14:30:00Z");
+    getPeriodRange("week", input);
+    expect(input).toEqual(new Date("2026-07-15T14:30:00Z")); // 그대로여야 함
+  });
+
   describe("week (월요일 시작 ~ 일요일 끝)", () => {
     it("평일(수)이 기준일이면 그 주 월~일을 반환한다", () => {
       // 2026-07-15는 수요일
