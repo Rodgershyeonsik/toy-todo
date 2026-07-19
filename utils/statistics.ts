@@ -21,12 +21,23 @@ export const getPeriodRange = (
   }
 
   if (period === "month") {
-    throw new Error("not implemented");
+    const startDate = new Date(base);
+    startDate.setUTCDate(1);
+
+    const endDate = new Date(base);
+    endDate.setUTCMonth(base.getUTCMonth() + 1, 0);
+
+    return { startDate, endDate };
   }
 
   if (period === "year") {
-    throw new Error("not implemented");
+    const startDate = new Date(base);
+    startDate.setUTCMonth(0, 1);
+    const endDate = new Date(base);
+    endDate.setUTCMonth(11, 31);
+
+    return { startDate, endDate };
   }
 
-  throw new Error("not implemented");
+  throw new Error(`Unknown period: ${period}`);
 };

@@ -70,6 +70,61 @@ describe("getPeriodRange", () => {
   });
 
   // 다음 그룹 — 구현 순서대로 채울 예정
-  describe.todo("month (1일 ~ 말일)");
-  describe.todo("year (1/1 ~ 12/31)");
+  describe("month (1일 ~ 말일)", () => {
+    it("월 중간이 기준이면 1일, 말일을 반환한다", () => {
+      const { startDate, endDate } = getPeriodRange(
+        "month",
+        new Date("2026-07-15")
+      );
+      expect(startDate).toEqual(new Date("2026-07-01"));
+      expect(endDate).toEqual(new Date("2026-07-31"));
+    });
+
+    it("1일이 기준이면 기준일, 말일을 반환한다", () => {
+      const { startDate, endDate } = getPeriodRange(
+        "month",
+        new Date("2026-04-01")
+      );
+      expect(startDate).toEqual(new Date("2026-04-01"));
+      expect(endDate).toEqual(new Date("2026-04-30"));
+    });
+
+    it("말일이 기준이면 1일, 기준일을 반환한다", () => {
+      const { startDate, endDate } = getPeriodRange(
+        "month",
+        new Date("2026-06-30")
+      );
+      expect(startDate).toEqual(new Date("2026-06-01"));
+      expect(endDate).toEqual(new Date("2026-06-30"));
+    });
+
+    it("평년 2월 중간이 기준일이면, 1일, 28일을 반환한다", () => {
+      const { startDate, endDate } = getPeriodRange(
+        "month",
+        new Date("2026-02-14")
+      );
+      expect(startDate).toEqual(new Date("2026-02-01"));
+      expect(endDate).toEqual(new Date("2026-02-28"));
+    });
+
+    it("윤년 2월 중간이 기준일이면, 1일, 29일을 반환한다", () => {
+      const { startDate, endDate } = getPeriodRange(
+        "month",
+        new Date("2024-02-14")
+      );
+      expect(startDate).toEqual(new Date("2024-02-01"));
+      expect(endDate).toEqual(new Date("2024-02-29"));
+    });
+  });
+
+  describe("year (1/1 ~ 12/31)", () => {
+    it("기준일 연도의 1월 1일, 12월 31일을 반환한다", () => {
+      const { startDate, endDate } = getPeriodRange(
+        "year",
+        new Date("2026-07-19")
+      );
+      expect(startDate).toEqual(new Date("2026-01-01"));
+      expect(endDate).toEqual(new Date("2026-12-31"));
+    });
+  });
 });
