@@ -54,7 +54,7 @@ export default function Home() {
     setEditingTodo,
     moveTodo,
     setQuickEditingText,
-  } = useTodoStore();
+  } = useTodoStore((state) => state.actions);
   const { openModal, closeModal } = useModalStore();
   const { isLoading: userIsLoading, signInWithGoogle, signOut } = useAuth();
 
@@ -252,9 +252,23 @@ export default function Home() {
                 </ul>
               </SortableContext>
             </DndContext>
+            <RenderingTest />
           </div>
         </main>
       </div>
     </div>
   );
+}
+
+function RenderingTest({}) {
+  const {
+    setTodos,
+    addTodo,
+    updateAllFields,
+    setEditingTodo,
+    moveTodo,
+    setQuickEditingText,
+  } = useTodoStore((state) => state.actions);
+
+  return <span>useStore 객체 통 리렌더링 테스트</span>;
 }

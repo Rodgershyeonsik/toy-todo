@@ -39,7 +39,7 @@ export default function Home() {
     setEditingTodo,
     moveTodo,
     setQuickEditingText,
-  } = useTodoStore();
+  } = useTodoStore((state) => state.actions);
   const { openModal } = useModalStore();
   const { isLoading: userIsLoading, signInWithGoogle, signOut } = useAuth();
 

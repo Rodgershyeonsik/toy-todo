@@ -11,7 +11,7 @@ import { toast } from "sonner";
 export function usePlayerLogic() {
   const { updateTodos } = useTodoMutation();
   const todos = useTodoStore((state) => state.todos);
-  const { patchTodo } = useTodoStore();
+  const { patchTodo } = useTodoStore((state) => state.actions);
   const { user } = useUserStore();
   const { upsertDailyLogAsync } = useDailyLogMutation();
   const [playerStatus, setPlayerStatus] = useState<PlayerStep>("IDLE");
