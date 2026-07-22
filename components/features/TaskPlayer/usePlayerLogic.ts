@@ -16,6 +16,7 @@ export function usePlayerLogic() {
   const { upsertDailyLogAsync } = useDailyLogMutation();
   const [playerStatus, setPlayerStatus] = useState<PlayerStep>("IDLE");
   const [mode, setMode] = useState<PlayerMode>("STOPWATCH");
+  const [stopwatchDisplayTime, setStopwatchDisplayTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const elapsedRef = useRef(0);
@@ -202,6 +203,7 @@ export function usePlayerLogic() {
     if (runningTodo) {
       setPlayerStatus("READY");
       setMode(mode);
+      // TODO: mode === "STOPWATCH", stopwatchDisplayTime 세팅??
     } else {
       window.confirm("할 일을 선택해주세요!");
     }
@@ -250,6 +252,7 @@ export function usePlayerLogic() {
     selectTodo,
     handlePlayerMode,
     runningTodo,
+    stopwatchDisplayTime,
     duration,
     playerStatus,
     startCountdown,

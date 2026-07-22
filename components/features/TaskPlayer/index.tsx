@@ -14,6 +14,7 @@ export default function TaskPlayer() {
     selectTodo,
     handlePlayerMode,
     runningTodo,
+    stopwatchDisplayTime,
     duration,
     playerStatus,
     startCountdown,
@@ -45,6 +46,7 @@ export default function TaskPlayer() {
       {isPlaying && mode === "STOPWATCH" && (
         <StopwatchPlayer
           runningTodo={runningTodo}
+          displayTime={stopwatchDisplayTime}
           timerStatus={playerStatus}
           onPlayTimer={startStopwatch}
           onStopTimer={stopStopwatch}

@@ -7,12 +7,14 @@ import { playButtonStyle, playerBasicStyle } from ".";
 export default function StopwatchPlayer({
   runningTodo,
   timerStatus,
+  displayTime,
   onPlayTimer,
   onStopTimer,
   onPauseTimer,
   onResetElapsedTime,
 }: {
   runningTodo?: Todo;
+  displayTime: number;
   timerStatus: PlayerStep;
   onPlayTimer: (id?: string) => void;
   onStopTimer: (id?: string) => void;
@@ -25,7 +27,7 @@ export default function StopwatchPlayer({
         <span className="text-lg font-bold">{runningTodo?.task}</span>
         <div className="flex gap-3 items-center">
           <span className="text-2xl font-bold font-mono">
-            {formatTime(runningTodo?.elapsedTime ?? 0)}
+            {formatTime(displayTime)}
           </span>
           <button
             className="bg-white/10 hover:bg-white/20 rounded-sm border border-blue-200 text-white text-sm font-semibold font-mono h-6 w-14"
