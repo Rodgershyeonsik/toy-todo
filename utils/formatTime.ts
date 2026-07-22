@@ -33,10 +33,12 @@ export const formatTimeToEn = (seconds: number) => {
   }
 
   if (m > 0) {
+    if (formatStr.length > 0) formatStr += " ";
     formatStr = formatStr + m + "m";
   }
 
   if (s > 0) {
+    if (formatStr.length > 0) formatStr += " ";
     formatStr = formatStr + s + "s";
   }
 
