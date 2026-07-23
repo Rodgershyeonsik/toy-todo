@@ -26,7 +26,6 @@ import { useTodos } from "@/hooks/useTodos";
 import { useBeforeUnloadSync } from "@/hooks/useBeforeUnloadSync";
 import { useAuth } from "@/hooks/useAuth";
 import useUserStore from "@/store/useUserStore";
-import { useEffect } from "react";
 
 export default function Home() {
   const { isLoading } = useTodos();

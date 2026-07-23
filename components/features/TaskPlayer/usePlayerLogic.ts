@@ -25,6 +25,9 @@ export function usePlayerLogic() {
   const initialDurationRef = useRef(0);
   const notifTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const runningTodo = todos.find((todo) => todo.isRunning);
+  const isPlaying = playerStatus !== "IDLE";
+
   const scheduleAlarm = (remainingSeconds: number) => {
     if (notifTimeoutRef.current) clearTimeout(notifTimeoutRef.current);
     notifTimeoutRef.current = setTimeout(() => {
@@ -50,7 +53,7 @@ export function usePlayerLogic() {
 
     timerRef.current = setInterval(() => {
       const elapsed = Math.floor((Date.now() - startTimeRef.current!) / 1000);
-      patchTodo(id, { elapsedTime: baseElapsed + elapsed });
+      setStopwatchDisplayTime(baseElapsed + elapsed);
     }, 1000);
   };
 
@@ -203,7 +206,8 @@ export function usePlayerLogic() {
     if (runningTodo) {
       setPlayerStatus("READY");
       setMode(mode);
-      // TODO: mode === "STOPWATCH", stopwatchDisplayTime 세팅??
+      if (mode === "STOPWATCH")
+        setStopwatchDisplayTime(runningTodo.elapsedTime ?? 0);
     } else {
       window.confirm("할 일을 선택해주세요!");
     }
@@ -241,9 +245,6 @@ export function usePlayerLogic() {
       setPlayerStatus("READY");
     }
   }, [duration]);
-
-  const runningTodo = todos.find((todo) => todo.isRunning);
-  const isPlaying = playerStatus !== "IDLE";
 
   return {
     todos,

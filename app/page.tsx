@@ -252,23 +252,9 @@ export default function Home() {
                 </ul>
               </SortableContext>
             </DndContext>
-            <RenderingTest />
           </div>
         </main>
       </div>
     </div>
   );
-}
-
-function RenderingTest({}) {
-  const {
-    setTodos,
-    addTodo,
-    updateAllFields,
-    setEditingTodo,
-    moveTodo,
-    setQuickEditingText,
-  } = useTodoStore((state) => state.actions);
-
-  return <span>useStore 객체 통 리렌더링 테스트</span>;
 }

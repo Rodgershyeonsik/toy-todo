@@ -14,7 +14,6 @@ interface TodoState {
     addTodo: (newTodo: Todo) => void;
     patchTodo: (id: string, updates: Partial<Todo>) => void;
     removeTodo: (id: string) => void;
-    incrementTime: (id: string) => void;
     toggleTodo: (id: string, checked: boolean) => void;
     setSelectedTodo: (todo: Todo | null) => void;
     saveQuickEdit: (text: string) => void;
@@ -46,12 +45,6 @@ const useTodoStore = create<TodoState>((set) => ({
     removeTodo: (id) =>
       set((state) => ({
         todos: state.todos.filter((t) => t.id !== id),
-      })),
-    incrementTime: (id) =>
-      set((state) => ({
-        todos: state.todos.map((t) =>
-          t.id === id ? { ...t, elapsedTime: (t.elapsedTime ?? 0) + 1 } : t
-        ),
       })),
     toggleTodo: (id, checked) =>
       set((state) => {
