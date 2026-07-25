@@ -18,7 +18,7 @@ export default function TodoItem({ todo }: TodoItemProps) {
     toggleTodo,
     saveQuickEdit,
     setQuickEditingText,
-  } = useTodoStore();
+  } = useTodoStore((state) => state.actions);
   const isEditing = editingTodo && editingTodo.id === todo.id;
 
   const handleSaveTodo = (text: string) => {
