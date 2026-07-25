@@ -11,11 +11,12 @@ import { toast } from "sonner";
 export function usePlayerLogic() {
   const { updateTodos } = useTodoMutation();
   const todos = useTodoStore((state) => state.todos);
-  const { patchTodo } = useTodoStore();
+  const { patchTodo } = useTodoStore((state) => state.actions);
   const { user } = useUserStore();
   const { upsertDailyLogAsync } = useDailyLogMutation();
   const [playerStatus, setPlayerStatus] = useState<PlayerStep>("IDLE");
   const [mode, setMode] = useState<PlayerMode>("STOPWATCH");
+  const [stopwatchDisplayTime, setStopwatchDisplayTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const elapsedRef = useRef(0);
@@ -23,6 +24,9 @@ export function usePlayerLogic() {
   const baseElapsedRef = useRef(0);
   const initialDurationRef = useRef(0);
   const notifTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const runningTodo = todos.find((todo) => todo.isRunning);
+  const isPlaying = playerStatus !== "IDLE";
 
   const scheduleAlarm = (remainingSeconds: number) => {
     if (notifTimeoutRef.current) clearTimeout(notifTimeoutRef.current);
@@ -49,7 +53,7 @@ export function usePlayerLogic() {
 
     timerRef.current = setInterval(() => {
       const elapsed = Math.floor((Date.now() - startTimeRef.current!) / 1000);
-      patchTodo(id, { elapsedTime: baseElapsed + elapsed });
+      setStopwatchDisplayTime(baseElapsed + elapsed);
     }, 1000);
   };
 
@@ -202,6 +206,8 @@ export function usePlayerLogic() {
     if (runningTodo) {
       setPlayerStatus("READY");
       setMode(mode);
+      if (mode === "STOPWATCH")
+        setStopwatchDisplayTime(runningTodo.elapsedTime ?? 0);
     } else {
       window.confirm("할 일을 선택해주세요!");
     }
@@ -240,9 +246,6 @@ export function usePlayerLogic() {
     }
   }, [duration]);
 
-  const runningTodo = todos.find((todo) => todo.isRunning);
-  const isPlaying = playerStatus !== "IDLE";
-
   return {
     todos,
     mode,
@@ -250,6 +253,7 @@ export function usePlayerLogic() {
     selectTodo,
     handlePlayerMode,
     runningTodo,
+    stopwatchDisplayTime,
     duration,
     playerStatus,
     startCountdown,
