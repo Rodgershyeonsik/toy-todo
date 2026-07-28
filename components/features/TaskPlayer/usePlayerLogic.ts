@@ -199,7 +199,23 @@ export function usePlayerLogic() {
 
   const resetElapsedTime = (id?: string) => {
     if (!id) return;
+    if (timerRef.current) return; // 타이머 실행 중이면 무시
+    const latestElapsed = stopwatchDisplayTime;
+    setStopwatchDisplayTime(0);
     patchTodo(id, { elapsedTime: 0 });
+    if (user) {
+      upsertDailyLogAsync({
+        todoId: id,
+        elapsedTime: 0,
+      }).catch(() => {
+        toast.error("시간 초기화에 실패했습니다");
+        setStopwatchDisplayTime(latestElapsed);
+        patchTodo(id, { elapsedTime: latestElapsed });
+      });
+    } else {
+      const latestTodos = useTodoStore.getState().todos;
+      updateTodos(latestTodos);
+    }
   };
 
   const handlePlayerMode = (mode: PlayerMode) => {

@@ -30,7 +30,11 @@ export default function StopwatchPlayer({
             {formatTime(displayTime)}
           </span>
           <button
-            className="bg-white/10 hover:bg-white/20 rounded-sm border border-blue-200 text-white text-sm font-semibold font-mono h-6 w-14"
+            disabled={timerStatus === "RUNNING"}
+            className={cn(
+              "bg-white/10 hover:bg-white/20 rounded-sm border border-blue-200 text-white text-sm font-semibold font-mono h-6 w-14",
+              timerStatus === "RUNNING" && "opacity-40 cursor-not-allowed"
+            )}
             onClick={() => onResetElapsedTime(runningTodo?.id)}
           >
             Reset
