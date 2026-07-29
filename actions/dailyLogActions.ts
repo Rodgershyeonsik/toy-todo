@@ -49,3 +49,28 @@ export async function getDailyLogsAction(date?: Date) {
   });
   return logs;
 }
+
+export async function getDailyLogsByPeriodAction(
+  startDate: Date,
+  endDate: Date,
+  todoIds: string[]
+) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  // 미인증 유저면 Unauthorized 에러를 던지고 DB를 조회하지 않는다.
+  if (!user) throw new Error("Unauthorized");
+
+  // 인증 유저의 startDate, endDate 기간에 해당하면서 todoIds과 todoId가 일치하는 dailylog 배열 조회
+  // 단 todosId가 빈 배열일 경우 기간내 모든 dailylog 조회
+  const logs = await prisma.dailyLog.findMany({
+    where: {
+      userId: user.id,
+      date: { gte: startDate, lte: endDate },
+      ...(todoIds.length > 0 && { todoId: { in: todoIds } }),
+    },
+  });
+  // 리턴 객체에는 실제 조회 시 사용한 startDate, endDate를 포함시키고, 조회 결과는 data 키에 Dailylogs[]로 나온다.
+  return { startDate, endDate, data: logs };
+}
