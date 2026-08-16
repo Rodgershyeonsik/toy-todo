@@ -2,12 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { createClient } from "@/lib/supabase/server";
-
-function getTodayDate() {
-  const today = new Date();
-  today.setUTCHours(0, 0, 0, 0);
-  return today;
-}
+import { getTodayInKST } from "@/utils";
 
 export async function upsertDailyLogAction(
   todoId: string,
@@ -26,7 +21,7 @@ export async function upsertDailyLogAction(
   });
   if (!todo || todo.userId !== user.id) throw new Error("Forbidden");
 
-  const today = getTodayDate();
+  const today = getTodayInKST();
 
   return await prisma.dailyLog.upsert({
     where: { todoId_date: { todoId, date: today } },
@@ -43,7 +38,7 @@ export async function getDailyLogsAction(date?: Date) {
 
   if (!user) throw new Error("Unauthorized");
 
-  const targetDate = date ?? getTodayDate();
+  const targetDate = date ?? getTodayInKST();
   const logs = await prisma.dailyLog.findMany({
     where: { userId: user.id, date: targetDate },
   });
