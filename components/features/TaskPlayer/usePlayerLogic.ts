@@ -30,12 +30,13 @@ export function usePlayerLogic() {
 
   const scheduleAlarm = (remainingSeconds: number) => {
     if (notifTimeoutRef.current) clearTimeout(notifTimeoutRef.current);
-    notifTimeoutRef.current = setTimeout(() => {
-      if (document.visibilityState === "visible") return;
+    notifTimeoutRef.current = setTimeout(async () => {
       playBeep();
       if (Notification.permission === "granted") {
-        new Notification("타이머 종료!", {
+        const registration = await navigator.serviceWorker.ready;
+        registration.showNotification("타이머 종료!", {
           body: "설정 시간이 종료되었습니다.",
+          data: { url: "/" },
         });
       }
     }, remainingSeconds * 1000);
