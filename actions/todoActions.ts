@@ -15,7 +15,7 @@ export async function getTodosAction() {
   today.setHours(0, 0, 0, 0);
 
   const todos = await prisma.todo.findMany({
-    where: { userId: user.id },
+    where: { userId: user.id, archivedAt: null },
     orderBy: { order: "asc" },
     include: {
       dailyLogs: {
@@ -108,6 +108,36 @@ export async function upsertTodoAction(
   }
 }
 
+// soft delete
+export async function archiveTodoAction(id: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) throw new Error("Unauthorized");
+
+  await prisma.todo.update({
+    where: { id, userId: user.id },
+    data: { archivedAt: new Date() },
+  });
+}
+
+export async function unarchiveTodoAction(id: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) throw new Error("Unauthorized");
+
+  await prisma.todo.update({
+    where: { id, userId: user.id },
+    data: { archivedAt: null },
+  });
+}
+
+// hard delete
 export async function deleteTodoAction(id: string) {
   const supabase = await createClient();
   const {

@@ -23,6 +23,7 @@ model Todo {
   dailyGoalTime Int?
   order        Int      @default(0)
   createdAt    DateTime @default(now())
+  archivedAt   DateTime?
   dailyLogs    DailyLog[]
   userId       String
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
