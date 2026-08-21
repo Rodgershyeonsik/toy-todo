@@ -4,6 +4,7 @@ import "./globals.css";
 import GlobalModal from "@/components/GlobalModal";
 import Providers from "./providers";
 import { Toaster } from "sonner";
+import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,6 +32,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <ServiceWorkerRegister />
         <Providers>
           {children}
           <GlobalModal />

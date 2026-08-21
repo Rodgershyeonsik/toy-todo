@@ -2,13 +2,15 @@ import { useTodoMutation } from "@/hooks/useTodoMutation";
 import useTodoStore from "@/store/useTodoStore";
 import useUserStore from "@/store/useUserStore";
 import { Todo } from "@/types/todo";
+import { toast } from "sonner";
 
 type TodoItemProps = {
   todo: Todo;
 };
 
 export default function TodoItem({ todo }: TodoItemProps) {
-  const { upsertTodo, updateTodos, deleteTodo } = useTodoMutation();
+  const { upsertTodo, updateTodos, archiveTodo, unarchiveTodo } =
+    useTodoMutation();
   const user = useUserStore((state) => state.user);
   const editingTodo = useTodoStore((state) => state.editingTodo);
   const editingText = useTodoStore((state) => state.quickEditingText);
@@ -44,7 +46,17 @@ export default function TodoItem({ todo }: TodoItemProps) {
     removeTodo(id);
     const latestTodos = useTodoStore.getState().todos;
     updateTodos(latestTodos);
-    if (user) deleteTodo(id);
+
+    if (user) {
+      archiveTodo(id);
+      toast("할 일을 보관했어요", {
+        description: "기록은 통계에 남아 있어요.",
+        action: {
+          label: "실행취소",
+          onClick: () => unarchiveTodo(id),
+        },
+      });
+    }
   };
 
   return (

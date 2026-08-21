@@ -1,6 +1,8 @@
 import {
+  archiveTodoAction,
   createTodoAction,
   deleteTodoAction,
+  unarchiveTodoAction,
   updateTodoAction,
   upsertTodoAction,
 } from "@/actions/todoActions";
@@ -84,6 +86,19 @@ export const useTodoMutation = () => {
     onError: handleMutationError,
   });
 
+  const archiveMutation = useMutation({
+    mutationFn: archiveTodoAction,
+    onError: handleMutationError,
+  });
+
+  const unarchiveMutation = useMutation({
+    mutationFn: unarchiveTodoAction,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["todos", user?.id] });
+    },
+    onError: handleMutationError,
+  });
+
   return {
     updateTodos: updateTodosMutation.mutate,
     addTodo: addMutation.mutate,
@@ -92,5 +107,7 @@ export const useTodoMutation = () => {
     updateTodoAsync: updateMutation.mutateAsync,
     upsertTodo: upsertMutation.mutate,
     deleteTodo: deleteMutation.mutate,
+    archiveTodo: archiveMutation.mutate,
+    unarchiveTodo: unarchiveMutation.mutate,
   };
 };
