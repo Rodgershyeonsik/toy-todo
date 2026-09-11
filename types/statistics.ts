@@ -18,10 +18,9 @@ export type TodoStat = {
 };
 
 export type PeriodSummary = {
-  totalElapsed: number;
-  activeDays: number;
-  todoCount: number;
-  dailyAverage: number;
+  totalElapsed: number; // 기간 전체 소요시간(초)
+  activeDays: number; // 기록이 있는 날 수 (같은 날 여러 작업을 해도 1일)
+  todoCount: number; // 기록이 있는 todo 수
 };
 
 // 1위 항목들과 그 값. 동률이면 tasks에 여러 개가 담긴다.

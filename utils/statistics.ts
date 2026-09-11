@@ -131,15 +131,12 @@ export const aggregateByTodo = (logs: StatLog[]): TodoStat[] => {
 export const summarizePeriod = (logs: StatLog[]): PeriodSummary => {
   const worked = logs.filter((log) => log.elapsedTime > 0);
   const totalElapsed = worked.reduce((acc, log) => acc + log.elapsedTime, 0);
-  // 평균은 기록이 아예 없는 날을 빼고, 실제로 작업한 날 기준으로 낸다.
-  const activeDays = new Set(worked.map((log) => toDateKey(new Date(log.date))))
-    .size;
 
   return {
     totalElapsed,
-    activeDays,
+    activeDays: new Set(worked.map((log) => toDateKey(new Date(log.date))))
+      .size,
     todoCount: new Set(worked.map((log) => log.todoId)).size,
-    dailyAverage: activeDays === 0 ? 0 : Math.round(totalElapsed / activeDays),
   };
 };
 

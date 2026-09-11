@@ -377,19 +377,18 @@ describe("getTimeAxis", () => {
 });
 
 describe("summarizePeriod", () => {
-  it("평균은 기록이 없는 날을 빼고 작업한 날 기준으로 낸다", () => {
+  it("소요시간이 0인 기록은 빼고, 날짜와 todo는 중복 없이 센다", () => {
     const summary = summarizePeriod([
       log("2026-07-13", 100, "a"),
-      log("2026-07-13", 50, "b", "운동"),
+      log("2026-07-13", 50, "b", "운동"), // 같은 날 다른 todo → 날짜는 1일로
       log("2026-07-15", 90, "a"),
-      log("2026-07-16", 0, "a"),
+      log("2026-07-16", 0, "a"), // 0초 → 집계에서 제외
     ]);
 
     expect(summary).toEqual({
       totalElapsed: 240,
       activeDays: 2,
       todoCount: 2,
-      dailyAverage: 120,
     });
   });
 });
