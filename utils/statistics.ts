@@ -178,8 +178,8 @@ export const getBucketUnit = (
   if (mode === "year") return "month";
 
   const days = (endDate.getTime() - startDate.getTime()) / DAY_MS + 1;
-  if (days <= 31) return "day";
-  if (days <= 120) return "week";
+  if (days <= 7) return "day";
+  if (days <= 84) return "week";
   return "month";
 };
 

@@ -173,7 +173,12 @@ describe("shiftPeriod", () => {
   });
 });
 
-const log = (date: string, elapsedTime: number, todoId = "a", task = "공부") => ({
+const log = (
+  date: string,
+  elapsedTime: number,
+  todoId = "a",
+  task = "공부"
+) => ({
   date: new Date(date),
   elapsedTime,
   todoId,
@@ -190,9 +195,12 @@ describe("getBucketUnit", () => {
   });
 
   it("직접 설정은 구간 길이로 단위를 정한다", () => {
-    expect(getBucketUnit("custom", start, new Date("2026-08-20"))).toBe("day");
-    expect(getBucketUnit("custom", start, new Date("2026-10-01"))).toBe("week");
-    expect(getBucketUnit("custom", start, new Date("2027-08-01"))).toBe("month");
+    expect(getBucketUnit("custom", start, new Date("2026-08-07"))).toBe("day"); // 7일
+    expect(getBucketUnit("custom", start, new Date("2026-08-08"))).toBe("week"); // 8일
+    expect(getBucketUnit("custom", start, new Date("2026-10-23"))).toBe("week"); // 84일
+    expect(getBucketUnit("custom", start, new Date("2026-10-24"))).toBe(
+      "month"
+    ); // 85일
   });
 });
 
