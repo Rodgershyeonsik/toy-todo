@@ -140,7 +140,7 @@ export const summarizePeriod = (logs: StatLog[]): PeriodSummary => {
   };
 };
 
-// 1위가 여럿이면 모두 돌려준다(동률 표시 요구사항).
+// 1위가 여럿이면 모두 돌려준다
 const pickTop = (
   stats: TodoStat[],
   getValue: (stat: TodoStat) => number
@@ -200,6 +200,7 @@ const getBucketLabel = (unit: BucketUnit, start: Date, end: Date) => {
   return `${formatMonthDay(start)}~${formatMonthDay(end)}`;
 };
 
+// time trend chart 막대 그리는 용
 // 기록이 없는 칸도 0으로 채워서 구간 전체를 빠짐없이 그린다.
 export const buildStackedBuckets = (
   logs: StatLog[],
@@ -255,6 +256,7 @@ const OTHERS_SERIES_ID = "__others__";
 
 // 색상은 필터와 무관하게 "기간 전체 기준"으로 한 번만 배정한다.
 // (필터를 걸었다고 살아남은 작업의 색이 바뀌면 안 된다)
+// 타입 정규화를 위해 todoIds는 배열로 통일
 export const buildChartSeries = (stats: TodoStat[]): ChartSeries[] => {
   const head = stats.slice(0, MAX_COLOR_SLOTS).map((stat, idx) => ({
     id: stat.todoId,
