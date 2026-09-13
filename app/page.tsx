@@ -17,8 +17,7 @@ import TodoItem from "@/components/features/TodoItem";
 import TaskPlayer from "@/components/features/TaskPlayer";
 import Dashbaord from "@/components/features/Dashboard";
 import { basicButtonCn, flexCenterCn } from "@/constants/styles";
-import { SquarePlus } from "lucide-react";
-import TodoEditor from "@/components/features/TodoEditor";
+import AppMenu from "@/components/features/AppMenu";
 import useTodoStore from "@/store/useTodoStore";
 import { useModalStore } from "@/store/useModalStore";
 import { cn } from "@/utils";
@@ -195,12 +194,7 @@ export default function Home() {
                   할 일들의 소요시간을 기록하고 관리해보자
                 </span>
               </div>
-              <button onClick={() => openModal(<TodoEditor />)}>
-                <SquarePlus
-                  className="text-gray-400 hover:text-blue-400"
-                  size={40}
-                />
-              </button>
+              <AppMenu />
             </div>
           </div>
           <div className="flex justify-end gap-2 mt-3">
