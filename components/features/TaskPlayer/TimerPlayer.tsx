@@ -35,7 +35,7 @@ export default function TimerPlayer({
             onClick={() =>
               openModal(
                 <TimerSetModal
-                  duration={duration}
+                  durationSeconds={duration}
                   onSaveDuration={onSaveDuration}
                 />
               )
