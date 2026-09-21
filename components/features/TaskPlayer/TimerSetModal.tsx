@@ -5,14 +5,17 @@ import { TimerReset } from "lucide-react";
 import { useState } from "react";
 
 export default function TimerSetModal({
-  duration,
+  durationSeconds,
   onSaveDuration,
 }: {
-  duration: number;
-  onSaveDuration: (minute: number) => void;
+  durationSeconds: number;
+  onSaveDuration: (seconds: number) => void;
 }) {
   const { closeModal } = useModalStore();
-  const [localDuration, setLocalDuration] = useState(duration);
+  // 초 단위는 절삭
+  const [localDuration, setLocalDuration] = useState(
+    Math.trunc(durationSeconds / 60)
+  );
 
   const getHText = () => {
     const h = parseMinutes(localDuration).h;
